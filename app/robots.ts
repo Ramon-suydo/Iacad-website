@@ -5,6 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: "/staff",
     },
     sitemap: "https://iacademy-library.vercel.app/sitemap.xml",
   };

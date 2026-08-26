@@ -7,8 +7,8 @@ import HeroCarousel, { type HeroSlide } from "@/components/HeroCarousel";
 import { site } from "@/data/site";
 import { services } from "@/data/services";
 import { facilities } from "@/data/facilities";
-import { announcements } from "@/data/announcements";
 import { events } from "@/data/events";
+import { createClient } from "@/lib/supabase/server";
 
 const heroSlides: HeroSlide[] = [
   { src: site.heroImage, alt: "iACADEMY Library Reading Hall" },
@@ -18,8 +18,15 @@ const heroSlides: HeroSlide[] = [
   { src: "/images/library/facilities/UG-Discussion Room 1.jpg", alt: "UG Discussion Room" },
 ];
 
-export default function HomePage() {
-  const latestAnnouncements = announcements.slice(0, 3);
+export default async function HomePage() {
+  const supabase = await createClient();
+  const { data: latestAnnouncements } = await supabase
+    .from("announcements")
+    .select("*")
+    .eq("published", true)
+    .order("date", { ascending: false })
+    .limit(3);
+
   const upcomingEvents = events.slice(0, 3);
   const featuredFacilities = facilities.slice(0, 3);
 
@@ -114,13 +121,13 @@ export default function HomePage() {
         </div>
       </Section>
 
-          <Section
+      <Section
         className="bg-navy-950"
-          dark
-          eyebrow="Our Spaces"
-          title="Facilities designed for every study style"
-          description="Explore reading halls, discussion rooms, and quiet rooms across our UG and SHS libraries."
-        >
+        dark
+        eyebrow="Our Spaces"
+        title="Facilities designed for every study style"
+        description="Explore reading halls, discussion rooms, and quiet rooms across our UG and SHS libraries."
+      >
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featuredFacilities.map((facility) => (
             <div
@@ -173,8 +180,8 @@ export default function HomePage() {
               </Link>
             </div>
             <div className="space-y-5">
-              {latestAnnouncements.map((a) => (
-                <Card key={a.slug} className="!p-5">
+              {(latestAnnouncements ?? []).map((a) => (
+                <Card key={a.id} className="!p-5">
                   <div className="flex items-center gap-3">
                     <span className="rounded-full bg-gold-500/10 px-2.5 py-1 text-xs font-semibold text-gold-600">
                       {a.category}
