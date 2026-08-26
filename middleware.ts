@@ -2,6 +2,15 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  console.log(
+    "MIDDLEWARE HIT:",
+    request.nextUrl.pathname,
+    "| URL set:",
+    !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    "| KEY set:",
+    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -28,6 +37,8 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  console.log("MIDDLEWARE: getUser resolved. user =", user);
 
   const isStaffRoute = request.nextUrl.pathname.startsWith("/staff");
   const isLoginRoute = request.nextUrl.pathname === "/staff/login";

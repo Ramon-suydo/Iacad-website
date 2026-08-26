@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
-import { ViewTransition } from "react";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -84,9 +83,9 @@ export default function RootLayout({
           Skip to content
         </a>
         <Navbar />
-        <main id="main-content" className="flex-1">
-          <ViewTransition>{children}</ViewTransition>
-        </main>
+            <main id="main-content" className="flex-1">
+              {children}
+          </main>
         <Footer />
       </body>
     </html>
