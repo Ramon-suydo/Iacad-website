@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
+import { ViewTransition } from "react";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { site } from "@/data/site";
 import type { Viewport } from "next";
-import PageTransition from "@/components/PageTransition";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,6 +42,25 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Library",
+  name: site.name,
+  description: site.description,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: site.address,
+  },
+  email: site.email,
+  telephone: site.phone,
+  openingHoursSpecification: site.hours.map((h) => ({
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: h.day,
+    description: h.time,
+  })),
+  sameAs: Object.values(site.social),
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -49,15 +68,27 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
-          className={`${inter.variable} ${fraunces.variable} font-sans antialiased flex min-h-screen flex-col overflow-x-hidden`}
+        className={`${inter.variable} ${fraunces.variable} font-sans antialiased flex min-h-screen flex-col overflow-x-hidden`}
+      >
+        
+        <a href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-100 focus:rounded-md focus:bg-gold-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-navy-950"
         >
+          Skip to content
+        </a>
         <Navbar />
-        <main className="flex-1">
-          <PageTransition>{children}</PageTransition>
-            </main>
+        <main id="main-content" className="flex-1">
+          <ViewTransition>{children}</ViewTransition>
+        </main>
         <Footer />
       </body>
     </html>
   );
-} 
+}

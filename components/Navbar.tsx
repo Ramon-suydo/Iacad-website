@@ -43,7 +43,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b bg-white/90 backdrop-blur-md transition-all duration-300 ${
+      className={`sticky top-0 z-50 border-b bg-white/90 backdrop-blur-md transition-[box-shadow,border-color] duration-300 will-change-[box-shadow] ${
         scrolled
           ? "border-navy-900/10 shadow-md"
           : "border-transparent shadow-none"
@@ -51,7 +51,7 @@ export default function Navbar() {
     >
       <Container>
         <div
-          className={`flex items-center justify-between transition-all duration-300 ${
+          className={`flex items-center justify-between transition-[height,padding] duration-300 ${
             scrolled ? "h-14" : "h-18 py-4"
           }`}
         >

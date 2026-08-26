@@ -19,7 +19,9 @@ export default function Section({
   dark?: boolean;
 }) {
   return (
-    <section className={`py-16 sm:py-20 ${className}`}>
+    <section
+    className={`py-16 sm:py-20 [content-visibility:auto] [contain-intrinsic-size:1px_800px] ${className}`}
+      >
       <Container>
         {(eyebrow || title || description) && (
           <div className={`mb-12 ${center ? "text-center mx-auto max-w-2xl" : "max-w-2xl"}`}>
