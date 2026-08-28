@@ -3,14 +3,23 @@ import { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import Section from "@/components/Section";
 import Card from "@/components/Card";
-import { guidelineSections } from "@/data/guidelines";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Guidelines",
   description: "Review the policies and guidelines for using the iACADEMY Library.",
 };
 
-export default function GuidelinesPage() {
+export const revalidate = 0;
+
+export default async function GuidelinesPage() {
+  const supabase = await createClient();
+  const { data: guidelineSections } = await supabase
+    .from("guidelines")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true });
+
   return (
     <>
       <PageHeader
@@ -21,8 +30,8 @@ export default function GuidelinesPage() {
 
       <Section>
         <div className="mx-auto max-w-4xl space-y-6">
-          {guidelineSections.map((section, index) => (
-            <Card key={section.slug} className="!p-7">
+          {guidelineSections?.map((section, index) => (
+            <Card key={section.id} className="!p-7">
               <div className="flex items-center gap-3">
                 <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy-950 font-serif text-sm font-semibold text-gold-400">
                   {index + 1}
@@ -32,7 +41,7 @@ export default function GuidelinesPage() {
                 </h2>
               </div>
               <ul className="mt-5 space-y-3 pl-11">
-                {section.rules.map((rule) => (
+                {section.rules?.map((rule: string) => (
                   <li
                     key={rule}
                     className="flex items-start gap-2.5 text-sm leading-relaxed text-navy-700/80"

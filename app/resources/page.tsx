@@ -3,14 +3,23 @@ import { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import Section from "@/components/Section";
 import Card from "@/components/Card";
-import { resourceCategories } from "@/data/resources";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Resources",
   description: "Browse the print, digital, and archival resources available at the iACADEMY Library.",
 };
 
-export default function ResourcesPage() {
+export const revalidate = 0;
+
+export default async function ResourcesPage() {
+  const supabase = await createClient();
+  const { data: resourceCategories } = await supabase
+    .from("resources")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true });
+
   return (
     <>
       <PageHeader
@@ -21,8 +30,8 @@ export default function ResourcesPage() {
 
       <Section>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {resourceCategories.map((category) => (
-            <Card key={category.slug} className="!p-7">
+          {resourceCategories?.map((category) => (
+            <Card key={category.id} className="!p-7">
               <h3 className="font-serif text-xl font-semibold text-navy-950">
                 {category.name}
               </h3>
@@ -30,7 +39,7 @@ export default function ResourcesPage() {
                 {category.description}
               </p>
               <ul className="mt-5 space-y-2.5">
-                {category.items.map((item) => (
+                {category.items?.map((item: string) => (
                   <li
                     key={item}
                     className="flex items-start gap-2.5 text-sm text-navy-700/80"

@@ -2,37 +2,40 @@ import { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import Section from "@/components/Section";
 import Card from "@/components/Card";
-import { site } from "@/data/site";
+import LibraryHoursTable from "@/components/LibraryHoursTable";
+import { getSiteSettings } from "@/lib/site-settings";
+import { getLibraryHours } from "@/lib/library-hours";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "About",
   description: "Learn about the mission, vision, and history of the iACADEMY Library.",
 };
 
-const values = [
-  {
-    title: "Academic Excellence",
-    description:
-      "We curate resources and spaces that directly support the rigor and creativity of iACADEMY's programs.",
-  },
-  {
-    title: "Accessibility",
-    description:
-      "Our facilities and services are designed to be open, welcoming, and easy to navigate for every student.",
-  },
-  {
-    title: "Innovation",
-    description:
-      "From digital labs to collaborative pods, we continuously evolve to match modern learning styles.",
-  },
-  {
-    title: "Community",
-    description:
-      "The library serves as a shared space where students, faculty, and staff connect and collaborate.",
-  },
-];
+export const revalidate = 0;
 
-export default function AboutPage() {
+function paragraphs(text: string) {
+  return text
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+}
+
+export default async function AboutPage() {
+  const settings = await getSiteSettings();
+  const hours = await getLibraryHours();
+  const supabase = await createClient();
+  const { data: about } = await supabase.from("about_content").select("*").limit(1).single();
+
+  const values = about
+    ? [
+        { title: about.value_1_title, description: about.value_1_description },
+        { title: about.value_2_title, description: about.value_2_description },
+        { title: about.value_3_title, description: about.value_3_description },
+        { title: about.value_4_title, description: about.value_4_description },
+      ]
+    : [];
+
   return (
     <>
       <PageHeader
@@ -47,31 +50,14 @@ export default function AboutPage() {
       >
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
           <div className="space-y-5 text-navy-700/80 leading-relaxed">
-            <p>
-              The iACADEMY Library exists to provide students, faculty, and staff
-              with the resources, spaces, and support needed to thrive
-              academically. We serve as the central knowledge hub for the
-              institution&apos;s specialized programs in design, technology,
-              business, and the arts.
-            </p>
-            <p>
-              Our facilities are built to accommodate a range of learning
-              styles — from focused individual study to collaborative team
-              projects — all within a modern, welcoming environment.
-            </p>
+            {paragraphs(about?.mission_left ?? "").map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
           </div>
           <div className="space-y-5 text-navy-700/80 leading-relaxed">
-            <p>
-              We are committed to staying aligned with the evolving needs of
-              iACADEMY&apos;s creative and professional programs, continuously
-              updating our resources and technology to match industry
-              standards.
-            </p>
-            <p>
-              Whether you&apos;re conducting research, preparing a thesis, or
-              simply looking for a quiet place to read, the library is here to
-              support your academic journey.
-            </p>
+            {paragraphs(about?.mission_right ?? "").map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
           </div>
         </div>
       </Section>
@@ -100,34 +86,13 @@ export default function AboutPage() {
       </Section>
 
       <Section eyebrow="Visit Us" title="Where to find us">
-        <Card className="!p-8">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-            <div>
-              <h3 className="font-serif text-base font-semibold text-navy-950">
-                Location
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-navy-700/70">
-                {site.address}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-serif text-base font-semibold text-navy-950">
-                Operating Hours
-              </h3>
-              <ul className="mt-2 space-y-1.5">
-                {site.hours.map((h) => (
-                  <li
-                    key={h.day}
-                    className="flex justify-between text-sm text-navy-700/70"
-                  >
-                    <span>{h.day}</span>
-                    <span className="font-medium text-navy-950">{h.time}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </Card>
+        <div className="mx-auto max-w-3xl space-y-6">
+          <Card className="!p-6">
+            <h3 className="font-serif text-base font-semibold text-navy-950">Location</h3>
+            <p className="mt-1 text-sm leading-relaxed text-navy-700/70">{settings.address}</p>
+          </Card>
+          <LibraryHoursTable main={hours.main} extension={hours.extension} />
+        </div>
       </Section>
     </>
   );

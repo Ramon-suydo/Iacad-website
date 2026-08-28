@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import Section from "@/components/Section";
 import Card from "@/components/Card";
-import { announcements } from "@/data/announcements";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Announcements",
@@ -16,10 +16,15 @@ const categoryStyles: Record<string, string> = {
   Event: "bg-emerald-500/10 text-emerald-700",
 };
 
-export default function AnnouncementsPage() {
-  const sorted = [...announcements].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+export const revalidate = 0;
+
+export default async function AnnouncementsPage() {
+  const supabase = await createClient();
+  const { data: sorted } = await supabase
+    .from("announcements")
+    .select("*")
+    .eq("published", true)
+    .order("date", { ascending: false });
 
   return (
     <>
@@ -31,8 +36,13 @@ export default function AnnouncementsPage() {
 
       <Section>
         <div className="mx-auto max-w-3xl space-y-5">
-          {sorted.map((a) => (
-            <Card key={a.slug} className="!p-6">
+          {sorted?.length === 0 && (
+            <p className="text-center text-sm text-navy-700/60">
+              No announcements right now — check back soon.
+            </p>
+          )}
+          {sorted?.map((a) => (
+            <Card key={a.id} className="!p-6">
               <div className="flex flex-wrap items-center gap-3">
                 <span
                   className={`rounded-full px-2.5 py-1 text-xs font-semibold ${

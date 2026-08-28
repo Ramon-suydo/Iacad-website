@@ -1,16 +1,40 @@
 import { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import Section from "@/components/Section";
-import { facilitiesByCampus, campusLabels, type Campus } from "@/data/facilities";
 import SafeImage from "@/components/SafeImage";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Facilities",
   description: "Explore the UG and SHS library facilities at iACADEMY's Makati campus.",
 };
 
-function FacilityGrid({ campus }: { campus: Campus }) {
-  const items = facilitiesByCampus(campus);
+export const revalidate = 0;
+
+const campusLabels: Record<string, { title: string; description: string }> = {
+  UG: {
+    title: "Undergraduate Library",
+    description:
+      "Spaces supporting the School of Computing, School of Design and the Arts, and School of Business and Liberal Arts.",
+  },
+  SHS: {
+    title: "Senior High School Library",
+    description:
+      "Dedicated facilities designed for the academic and research needs of Senior High School students.",
+  },
+};
+
+type Facility = {
+  id: string;
+  slug: string;
+  name: string;
+  campus: "UG" | "SHS";
+  description: string;
+  image_url: string | null;
+  tags: string[] | null;
+};
+
+function FacilityGrid({ campus, items }: { campus: "UG" | "SHS"; items: Facility[] }) {
   const label = campusLabels[campus];
 
   return (
@@ -26,20 +50,18 @@ function FacilityGrid({ campus }: { campus: Campus }) {
             className="group overflow-hidden rounded-xl border border-navy-900/8 bg-white shadow-card transition-all hover:shadow-cardHover"
           >
             <div className="relative aspect-[4/3] overflow-hidden bg-navy-100">
-              <SafeImage
-              src={facility.image}
-            alt={facility.name}
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
+              {facility.image_url && (
+                <SafeImage
+                  src={facility.image_url}
+                  alt={facility.name}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+              )}
             </div>
             <div className="p-6">
-              <h3 className="font-serif text-lg font-semibold text-navy-950">
-                {facility.name}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-navy-700/70">
-                {facility.description}
-              </p>
-              {facility.tags && (
+              <h3 className="font-serif text-lg font-semibold text-navy-950">{facility.name}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-navy-700/70">{facility.description}</p>
+              {facility.tags && facility.tags.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {facility.tags.map((tag) => (
                     <span
@@ -59,7 +81,18 @@ function FacilityGrid({ campus }: { campus: Campus }) {
   );
 }
 
-export default function FacilitiesPage() {
+export default async function FacilitiesPage() {
+  const supabase = await createClient();
+  const { data: facilities } = await supabase
+    .from("facilities")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
+
+  const ug = (facilities ?? []).filter((f) => f.campus === "UG");
+  const shs = (facilities ?? []).filter((f) => f.campus === "SHS");
+
   return (
     <>
       <PageHeader
@@ -67,9 +100,9 @@ export default function FacilitiesPage() {
         title="Spaces built for how you study"
         description="From silent reading rooms to collaborative discussion spaces, discover the facilities across our UG and SHS libraries."
       />
-      <FacilityGrid campus="UG" />
+      <FacilityGrid campus="UG" items={ug} />
       <div className="border-t border-navy-900/8" />
-      <FacilityGrid campus="SHS" />
+      <FacilityGrid campus="SHS" items={shs} />
     </>
   );
 }

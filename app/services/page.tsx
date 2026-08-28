@@ -3,12 +3,14 @@ import { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import Section from "@/components/Section";
 import Card from "@/components/Card";
-import { services } from "@/data/services";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Services",
   description: "Explore the academic support services offered by the iACADEMY Library.",
 };
+
+export const revalidate = 0;
 
 const iconPaths: Record<string, string> = {
   book: "M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5v-18ZM4 19.5V4.5",
@@ -20,7 +22,14 @@ const iconPaths: Record<string, string> = {
     "M22 10 12 5 2 10l10 5 10-5ZM6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5",
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const supabase = await createClient();
+  const { data: services } = await supabase
+    .from("services")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true });
+
   return (
     <>
       <PageHeader
@@ -31,8 +40,8 @@ export default function ServicesPage() {
 
       <Section>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => (
-            <Card key={service.slug}>
+          {services?.map((service) => (
+            <Card key={service.id}>
               <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-navy-950">
                 <svg
                   width="20"

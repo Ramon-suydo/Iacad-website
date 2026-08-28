@@ -4,10 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navItems } from "@/data/nav";
-import { site } from "@/data/site";
 import Container from "./Container";
 
-export default function Navbar() {
+export default function Navbar({ shortName }: { shortName: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -28,7 +27,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Lock body scroll while mobile menu is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -36,7 +34,6 @@ export default function Navbar() {
     };
   }, [open]);
 
-  // Auto-close mobile menu on route change
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
@@ -60,7 +57,7 @@ export default function Navbar() {
               i
             </span>
             <span className="font-serif text-lg font-semibold text-navy-950 tracking-tight">
-              {site.shortName}
+              {shortName}
               <span className="ml-1.5 font-sans text-xs font-medium uppercase tracking-wider text-gold-600">
                 Library
               </span>

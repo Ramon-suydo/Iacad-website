@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { site } from "@/data/site";
-import type { Viewport } from "next";
+import { getSiteSettings } from "@/lib/site-settings";
+import { getLibraryHours } from "@/lib/library-hours";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,19 +19,22 @@ const fraunces = Fraunces({
   weight: ["400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: `${site.name} | ${site.tagline}`,
-    template: `%s | ${site.name}`,
-  },
-  description: site.description,
-  metadataBase: new URL("https://iacademy-library.vercel.app"),
-  openGraph: {
-    title: site.name,
-    description: site.description,
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: {
+      default: `${settings.name} | ${settings.tagline}`,
+      template: `%s | ${settings.name}`,
+    },
+    description: settings.description,
+    metadataBase: new URL("https://iacademy-library.vercel.app"),
+    openGraph: {
+      title: settings.name,
+      description: settings.description,
+      type: "website",
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -41,30 +44,33 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Library",
-  name: site.name,
-  description: site.description,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: site.address,
-  },
-  email: site.email,
-  telephone: site.phone,
-  openingHoursSpecification: site.hours.map((h) => ({
-    "@type": "OpeningHoursSpecification",
-    dayOfWeek: h.day,
-    description: h.time,
-  })),
-  sameAs: Object.values(site.social),
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getSiteSettings();
+  const hours = await getLibraryHours();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Library",
+    name: settings.name,
+    description: settings.description,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: settings.address,
+    },
+    email: settings.email,
+    telephone: settings.phone,
+    openingHoursSpecification: hours.main.map((h) => ({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: h.day_name,
+      description: h.hours_text,
+    })),
+    sameAs: [settings.social_facebook, settings.social_instagram, settings.social_tiktok].filter(Boolean),
+  };
+
   return (
     <html lang="en">
       <head>
@@ -76,17 +82,16 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${fraunces.variable} font-sans antialiased flex min-h-screen flex-col overflow-x-hidden`}
       >
-        
         <a href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-100 focus:rounded-md focus:bg-gold-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-navy-950"
         >
           Skip to content
         </a>
-        <Navbar />
-            <main id="main-content" className="flex-1">
-              {children}
-          </main>
-        <Footer />
+        <Navbar shortName={settings.short_name} />
+        <main id="main-content" className="flex-1">
+          {children}
+        </main>
+        <Footer settings={settings} />
       </body>
     </html>
   );

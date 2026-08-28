@@ -4,22 +4,15 @@ import Section from "@/components/Section";
 import Card from "@/components/Card";
 import SafeImage from "@/components/SafeImage";
 import HeroCarousel, { type HeroSlide } from "@/components/HeroCarousel";
-import { site } from "@/data/site";
-import { services } from "@/data/services";
-import { facilities } from "@/data/facilities";
-import { events } from "@/data/events";
 import { createClient } from "@/lib/supabase/server";
+import { getSiteSettings } from "@/lib/site-settings";
 
-const heroSlides: HeroSlide[] = [
-  { src: site.heroImage, alt: "iACADEMY Library Reading Hall" },
-  { src: "/images/library/facilities/UG LIBRARY.jpg", alt: "UG Library" },
-  { src: "/images/library/facilities/UG-Research Hub.jpg", alt: "UG Research Hub" },
-  { src: "/images/library/facilities/SHS Library.jpg", alt: "SHS Library" },
-  { src: "/images/library/facilities/UG-Discussion Room 1.jpg", alt: "UG Discussion Room" },
-];
+export const revalidate = 0;
 
 export default async function HomePage() {
   const supabase = await createClient();
+  const settings = await getSiteSettings();
+
   const { data: latestAnnouncements } = await supabase
     .from("announcements")
     .select("*")
@@ -27,8 +20,34 @@ export default async function HomePage() {
     .order("date", { ascending: false })
     .limit(3);
 
-  const upcomingEvents = events.slice(0, 3);
-  const featuredFacilities = facilities.slice(0, 3);
+  const { data: upcomingEvents } = await supabase
+    .from("events")
+    .select("*")
+    .eq("published", true)
+    .order("event_date", { ascending: true })
+    .limit(3);
+
+  const { data: featuredFacilities } = await supabase
+    .from("facilities")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true })
+    .limit(3);
+
+  const { data: featuredServices } = await supabase
+    .from("services")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true })
+    .limit(3);
+
+  const heroSlides: HeroSlide[] = [
+    { src: settings.hero_image ?? "/images/library/facilities/main-library-reading-hall.jpg", alt: "iACADEMY Library Reading Hall" },
+    { src: "/images/library/facilities/UG LIBRARY.jpg", alt: "UG Library" },
+    { src: "/images/library/facilities/UG-Research Hub.jpg", alt: "UG Research Hub" },
+    { src: "/images/library/facilities/SHS Library.jpg", alt: "SHS Library" },
+    { src: "/images/library/facilities/UG-Discussion Room 1.jpg", alt: "UG Discussion Room" },
+  ];
 
   return (
     <>
@@ -56,7 +75,7 @@ export default async function HomePage() {
               <span className="text-gold-400">focused learning</span> and discovery.
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
-              {site.description}
+              {settings.description}
             </p>
             <div className="mt-9 flex flex-wrap gap-4">
               <Link
@@ -100,8 +119,8 @@ export default async function HomePage() {
         description="From research support to collaborative spaces, the library provides the tools to help you succeed."
       >
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {services.slice(0, 3).map((service) => (
-            <Card key={service.slug}>
+          {(featuredServices ?? []).map((service) => (
+            <Card key={service.id}>
               <h3 className="font-serif text-lg font-semibold text-navy-950">
                 {service.name}
               </h3>
@@ -129,17 +148,19 @@ export default async function HomePage() {
         description="Explore reading halls, discussion rooms, and quiet rooms across our UG and SHS libraries."
       >
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredFacilities.map((facility) => (
+          {(featuredFacilities ?? []).map((facility) => (
             <div
-              key={facility.slug}
+              key={facility.id}
               className="group overflow-hidden rounded-xl border border-white/10 bg-navy-900"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-navy-800">
-                <SafeImage
-                  src={facility.image}
-                  alt={facility.name}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
+                {facility.image_url && (
+                  <SafeImage
+                    src={facility.image_url}
+                    alt={facility.name}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                )}
               </div>
               <div className="p-5">
                 <span className="text-xs font-semibold uppercase tracking-wide text-gold-400">
@@ -218,15 +239,15 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="space-y-5">
-              {upcomingEvents.map((e) => (
-                <Card key={e.slug} className="!p-5">
+              {(upcomingEvents ?? []).map((e) => (
+                <Card key={e.id} className="!p-5">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 rounded-lg bg-navy-950 px-3 py-2 text-center">
                       <p className="font-serif text-lg font-semibold text-gold-400">
-                        {new Date(e.date).getDate()}
+                        {new Date(e.event_date).getDate()}
                       </p>
                       <p className="text-[10px] font-semibold uppercase text-white/60">
-                        {new Date(e.date).toLocaleDateString("en-US", { month: "short" })}
+                        {new Date(e.event_date).toLocaleDateString("en-US", { month: "short" })}
                       </p>
                     </div>
                     <div>
@@ -234,7 +255,7 @@ export default async function HomePage() {
                         {e.title}
                       </h3>
                       <p className="mt-1 text-xs text-navy-700/50">
-                        {e.time} · {e.location}
+                        {e.event_time} · {e.location}
                       </p>
                     </div>
                   </div>

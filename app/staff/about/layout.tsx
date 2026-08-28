@@ -10,7 +10,6 @@ const staffNav = [
   { href: "/staff/guidelines", label: "Guidelines" },
   { href: "/staff/resources", label: "Resources" },
   { href: "/staff/about", label: "About Page" },
-  { href: "/staff/hours", label: "Library Hours" },
   { href: "/staff/settings", label: "Site Settings" },
 ];
 
