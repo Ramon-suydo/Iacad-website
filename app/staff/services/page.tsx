@@ -48,9 +48,9 @@ export default async function StaffServicesPage() {
                 <span className="rounded-full bg-navy-900/5 px-2.5 py-1 text-xs font-medium text-navy-700/70">
                   {s.icon}
                 </span>
-                {!s.published && (
-                  <span className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-600">
-                    Draft
+                {s.pending_review && (
+                  <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                    Pending Review
                   </span>
                 )}
               </div>

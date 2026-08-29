@@ -30,17 +30,12 @@ export default async function GuidelinesPage() {
 
       <Section>
         <div className="mx-auto max-w-4xl space-y-6">
-          {guidelineSections?.map((section, index) => (
+          {guidelineSections?.map((section) => (
             <Card key={section.id} className="!p-7">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy-950 font-serif text-sm font-semibold text-gold-400">
-                  {index + 1}
-                </span>
-                <h2 className="font-serif text-xl font-semibold text-navy-950">
-                  {section.title}
-                </h2>
-              </div>
-              <ul className="mt-5 space-y-3 pl-11">
+              <h2 className="font-serif text-xl font-semibold text-navy-950">
+                {section.title}
+              </h2>
+              <ul className="mt-5 space-y-3">
                 {section.rules?.map((rule: string) => (
                   <li
                     key={rule}
@@ -63,6 +58,11 @@ export default async function GuidelinesPage() {
                   </li>
                 ))}
               </ul>
+              {section.note && (
+                <p className="mt-5 border-t border-navy-900/8 pt-5 text-xs italic leading-relaxed text-navy-700/50">
+                  {section.note}
+                </p>
+              )}
             </Card>
           ))}
         </div>

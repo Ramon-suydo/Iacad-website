@@ -2,16 +2,10 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  console.log(
-    "MIDDLEWARE HIT:",
-    request.nextUrl.pathname,
-    "| URL set:",
-    !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-    "| KEY set:",
-    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
 
-  let response = NextResponse.next({ request });
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,7 +19,7 @@ export async function middleware(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          response = NextResponse.next({ request });
+          response = NextResponse.next({ request: { headers: requestHeaders } });
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
@@ -37,8 +31,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  console.log("MIDDLEWARE: getUser resolved. user =", user);
 
   const isStaffRoute = request.nextUrl.pathname.startsWith("/staff");
   const isLoginRoute = request.nextUrl.pathname === "/staff/login";
@@ -55,5 +47,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/staff/:path*"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

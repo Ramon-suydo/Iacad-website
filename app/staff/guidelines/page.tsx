@@ -48,9 +48,9 @@ export default async function StaffGuidelinesPage() {
                 <span className="rounded-full bg-navy-900/5 px-2.5 py-1 text-xs font-medium text-navy-700/70">
                   {g.rules?.length ?? 0} rule{g.rules?.length === 1 ? "" : "s"}
                 </span>
-                {!g.published && (
-                  <span className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-600">
-                    Draft
+                {g.pending_review && (
+                  <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                    Pending Review
                   </span>
                 )}
               </div>

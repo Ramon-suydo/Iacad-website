@@ -11,16 +11,22 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
       <Container className="py-14">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <div className="flex items-center gap-2.5 mb-4">
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-gold-500 text-navy-950 font-serif font-semibold text-lg">
-                i
-              </span>
-              <span className="font-serif text-lg font-semibold text-white">
-                {settings.short_name}
-                <span className="ml-1.5 font-sans text-xs font-medium uppercase tracking-wider text-gold-400">
-                  Library
-                </span>
-              </span>
+            <div className="mb-4">
+              {settings.logo_url ? (
+                <img src={settings.logo_url} alt={settings.short_name} className="h-10 w-auto" />
+              ) : (
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-md bg-gold-500 text-navy-950 font-serif font-semibold text-lg">
+                    i
+                  </span>
+                  <span className="font-serif text-lg font-semibold text-white">
+                    {settings.short_name}
+                    <span className="ml-1.5 font-sans text-xs font-medium uppercase tracking-wider text-gold-400">
+                      Library
+                    </span>
+                  </span>
+                </div>
+              )}
             </div>
             <p className="text-sm leading-relaxed text-white/60">
               {settings.tagline}
@@ -87,9 +93,14 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
           <p className="text-xs text-white/40">
             © {year} {settings.name}. All rights reserved.
           </p>
-          <p className="text-xs text-white/40">
-            Informational site — not affiliated with library system access.
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-xs text-white/40">
+              Informational site — not affiliated with library system access.
+            </p>
+            <Link href="/staff/login" className="text-xs text-white/20 transition-colors hover:text-white/50">
+              Staff
+            </Link>
+          </div>
         </div>
       </Container>
     </footer>

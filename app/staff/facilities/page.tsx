@@ -16,6 +16,7 @@ type Facility = {
   description: string;
   image_url: string | null;
   published: boolean;
+  pending_review: boolean;
 };
 
 function FacilityGroup({ title, items }: { title: string; items: Facility[] }) {
@@ -40,9 +41,9 @@ function FacilityGroup({ title, items }: { title: string; items: Facility[] }) {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="truncate font-serif text-base font-semibold text-navy-950">{f.name}</h3>
-                  {!f.published && (
-                    <span className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-600">
-                      Draft
+                  {f.pending_review && (
+                    <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                      Pending Review
                     </span>
                   )}
                 </div>

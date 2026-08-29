@@ -60,9 +60,9 @@ export default async function StaffAnnouncementsPage() {
                 <span className="text-xs text-navy-700/50">
                   {new Date(a.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                 </span>
-                {!a.published && (
-                  <span className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-600">
-                    Draft
+                {a.pending_review && (
+                  <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                    Pending Review
                   </span>
                 )}
               </div>

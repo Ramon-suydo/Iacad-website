@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -51,6 +52,9 @@ export default async function RootLayout({
 }) {
   const settings = await getSiteSettings();
   const hours = await getLibraryHours();
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  const isStaffRoute = pathname.startsWith("/staff");
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -87,11 +91,11 @@ export default async function RootLayout({
         >
           Skip to content
         </a>
-        <Navbar shortName={settings.short_name} />
+        {!isStaffRoute && <Navbar shortName={settings.short_name} logoUrl={settings.logo_url} />}
         <main id="main-content" className="flex-1">
           {children}
         </main>
-        <Footer settings={settings} />
+        {!isStaffRoute && <Footer settings={settings} />}
       </body>
     </html>
   );

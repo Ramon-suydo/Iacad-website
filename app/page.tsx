@@ -68,11 +68,10 @@ export default async function HomePage() {
         <Container className="relative py-28 sm:py-36">
           <div className="max-w-2xl animate-fade-up">
             <span className="mb-4 inline-block text-xs font-semibold uppercase tracking-[0.2em] text-gold-400">
-              iACADEMY Library — Makati Campus
+              {settings.hero_eyebrow}
             </span>
             <h1 className="font-serif text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
-              A modern space for{" "}
-              <span className="text-gold-400">focused learning</span> and discovery.
+              {settings.hero_headline}
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
               {settings.description}
@@ -98,10 +97,10 @@ export default async function HomePage() {
       <div className="border-b border-navy-900/8 bg-white">
         <Container className="grid grid-cols-2 gap-8 py-10 sm:grid-cols-4">
           {[
-            { label: "Study Seats", value: "300+" },
-            { label: "Facilities", value: "15" },
-            { label: "Weekly Hours", value: "70+" },
-            { label: "Campus Libraries", value: "2" },
+            { label: settings.stat_1_label, value: settings.stat_1_value },
+            { label: settings.stat_2_label, value: settings.stat_2_value },
+            { label: settings.stat_3_label, value: settings.stat_3_value },
+            { label: settings.stat_4_label, value: settings.stat_4_value },
           ].map((stat) => (
             <div key={stat.label}>
               <p className="font-serif text-3xl font-semibold text-navy-950">

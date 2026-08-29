@@ -3,22 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getStaffContext } from "@/lib/staff-role";
 
 function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+  return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 export async function saveService(formData: FormData) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
+  const supabase = await createClient();
 
   const id = formData.get("id") as string | null;
   const name = (formData.get("name") as string).trim();
@@ -34,6 +28,8 @@ export async function saveService(formData: FormData) {
     icon,
     sort_order: sortOrder,
     published,
+    pending_review: role !== "chief",
+    submitted_by: user.id,
   };
 
   if (id) {
@@ -51,12 +47,9 @@ export async function saveService(formData: FormData) {
 }
 
 export async function deleteService(formData: FormData) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getStaffContext();
   if (!user) redirect("/staff/login");
+  const supabase = await createClient();
 
   const id = formData.get("id") as string;
   const { error } = await supabase.from("services").delete().eq("id", id);

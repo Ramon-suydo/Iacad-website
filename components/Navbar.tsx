@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { navItems } from "@/data/nav";
 import Container from "./Container";
 
-export default function Navbar({ shortName }: { shortName: string }) {
+export default function Navbar({ shortName, logoUrl }: { shortName: string; logoUrl: string | null }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -52,16 +52,22 @@ export default function Navbar({ shortName }: { shortName: string }) {
             scrolled ? "h-14" : "h-18 py-4"
           }`}
         >
-          <Link href="/" className="flex items-center gap-2.5 group" onClick={() => setOpen(false)}>
-            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-navy-900 text-gold-400 font-serif font-semibold text-lg transition-transform group-hover:scale-105">
-              i
-            </span>
-            <span className="font-serif text-lg font-semibold text-navy-950 tracking-tight">
-              {shortName}
-              <span className="ml-1.5 font-sans text-xs font-medium uppercase tracking-wider text-gold-600">
-                Library
+          <Link href="/" className="flex items-center group" onClick={() => setOpen(false)}>
+            {logoUrl ? (
+              <img src={logoUrl} alt={shortName} className="h-10 w-auto transition-transform group-hover:scale-105" />
+            ) : (
+              <span className="flex items-center gap-2.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-md bg-navy-900 text-gold-400 font-serif font-semibold text-lg">
+                  i
+                </span>
+                <span className="font-serif text-lg font-semibold text-navy-950 tracking-tight">
+                  {shortName}
+                  <span className="ml-1.5 font-sans text-xs font-medium uppercase tracking-wider text-gold-600">
+                    Library
+                  </span>
+                </span>
               </span>
-            </span>
+            )}
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">

@@ -53,9 +53,9 @@ export default async function StaffEventsPage() {
                   })}{" "}
                   · {e.event_time} · {e.location}
                 </span>
-                {!e.published && (
-                  <span className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-600">
-                    Draft
+                {e.pending_review && (
+                  <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                    Pending Review
                   </span>
                 )}
               </div>

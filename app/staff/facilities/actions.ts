@@ -3,34 +3,25 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getStaffContext } from "@/lib/staff-role";
 
 function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+  return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 const BUCKET = "facility-images";
 
 export async function saveFacility(formData: FormData) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
+  const supabase = await createClient();
 
   const id = formData.get("id") as string | null;
   const name = (formData.get("name") as string).trim();
   const campus = formData.get("campus") as string;
   const description = (formData.get("description") as string).trim();
   const tagsRaw = (formData.get("tags") as string) ?? "";
-  const tags = tagsRaw
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
+  const tags = tagsRaw.split(",").map((t) => t.trim()).filter(Boolean);
   const sortOrder = Number(formData.get("sort_order") ?? 0) || 0;
   const published = formData.get("published") === "on";
   const currentImageUrl = (formData.get("current_image_url") as string) || null;
@@ -41,11 +32,8 @@ export async function saveFacility(formData: FormData) {
   if (file && file.size > 0) {
     const ext = file.name.split(".").pop() || "jpg";
     const path = `${slugify(name)}-${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage
-      .from(BUCKET)
-      .upload(path, file, { cacheControl: "3600", upsert: false });
+    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: "3600", upsert: false });
     if (uploadError) throw new Error(uploadError.message);
-
     const { data: publicUrlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
     imageUrl = publicUrlData.publicUrl;
   }
@@ -59,6 +47,8 @@ export async function saveFacility(formData: FormData) {
     tags,
     sort_order: sortOrder,
     published,
+    pending_review: role !== "chief",
+    submitted_by: user.id,
   };
 
   if (id) {
@@ -76,12 +66,9 @@ export async function saveFacility(formData: FormData) {
 }
 
 export async function deleteFacility(formData: FormData) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getStaffContext();
   if (!user) redirect("/staff/login");
+  const supabase = await createClient();
 
   const id = formData.get("id") as string;
   const imageUrl = formData.get("image_url") as string | null;
