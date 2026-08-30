@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getStaffContext } from "@/lib/staff-role";
+import { friendlyDbError } from "@/lib/db-error";
+import type { FormState } from "@/lib/form-state";
 
 function slugify(text: string) {
   return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-export async function saveResource(formData: FormData) {
+export async function saveResource(_prevState: FormState, formData: FormData): Promise<FormState> {
   const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
   const supabase = await createClient();
@@ -35,10 +37,10 @@ export async function saveResource(formData: FormData) {
 
   if (id) {
     const { error } = await supabase.from("resources").update(payload).eq("id", id);
-    if (error) throw new Error(error.message);
+    if (error) return { error: friendlyDbError(error, "A resource category") };
   } else {
     const { error } = await supabase.from("resources").insert(payload);
-    if (error) throw new Error(error.message);
+    if (error) return { error: friendlyDbError(error, "A resource category") };
   }
 
   revalidatePath("/staff/resources");

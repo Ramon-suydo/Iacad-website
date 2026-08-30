@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionState } from "react";
 import { saveResource } from "./actions";
 
 type Resource = {
@@ -12,8 +13,16 @@ type Resource = {
 };
 
 export default function ResourceForm({ resource }: { resource?: Resource }) {
+  const [state, formAction, pending] = useActionState(saveResource, null);
+
   return (
-    <form action={saveResource} className="max-w-xl space-y-5">
+    <form action={formAction} className="max-w-xl space-y-5">
+      {state?.error && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {state.error}
+        </div>
+      )}
+
       {resource && <input type="hidden" name="id" value={resource.id} />}
 
       <div>
@@ -78,9 +87,10 @@ export default function ResourceForm({ resource }: { resource?: Resource }) {
 
       <button
         type="submit"
-        className="rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400"
+        disabled={pending}
+        className="rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400 disabled:opacity-50"
       >
-        Save
+        {pending ? "Saving..." : "Save"}
       </button>
     </form>
   );

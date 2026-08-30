@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getStaffContext } from "@/lib/staff-role";
+import { friendlyDbError } from "@/lib/db-error";
+import type { FormState } from "@/lib/form-state";
 
 function slugify(text: string) {
   return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-export async function saveService(formData: FormData) {
+export async function saveService(_prevState: FormState, formData: FormData): Promise<FormState> {
   const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
   const supabase = await createClient();
@@ -34,10 +36,10 @@ export async function saveService(formData: FormData) {
 
   if (id) {
     const { error } = await supabase.from("services").update(payload).eq("id", id);
-    if (error) throw new Error(error.message);
+    if (error) return { error: friendlyDbError(error, "A service") };
   } else {
     const { error } = await supabase.from("services").insert(payload);
-    if (error) throw new Error(error.message);
+    if (error) return { error: friendlyDbError(error, "A service") };
   }
 
   revalidatePath("/staff/services");
