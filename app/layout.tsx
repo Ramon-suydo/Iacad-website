@@ -36,15 +36,22 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${settings.name}`,
     },
     description: settings.description,
+    applicationName: "iACADEMY Library",
+    alternates: { canonical: "/" },
     icons: {
-      icon: "/favicon.png",
-      shortcut: "/favicon.png",
-      apple: "/favicon.png",
+      icon: [
+        { url: "/favicon.png?v=3", type: "image/png", sizes: "512x512" },
+        { url: "/icon.png?v=3", type: "image/png", sizes: "512x512" },
+      ],
+      shortcut: "/favicon.png?v=3",
+      apple: [{ url: "/apple-icon.png?v=3", type: "image/png", sizes: "512x512" }],
     },
     metadataBase: new URL("https://iacademy-library.vercel.app"),
     openGraph: {
       title: settings.name,
       description: settings.description,
+      siteName: "iACADEMY Library",
+      url: "/",
       type: "website",
     },
     verification: {
@@ -74,21 +81,35 @@ export default async function RootLayout({
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Library",
-    name: settings.name,
-    description: settings.description,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: settings.address,
-    },
-    email: settings.email,
-    telephone: settings.phone,
-    openingHoursSpecification: hours.main.map((h) => ({
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: h.day_name,
-      description: h.hours_text,
-    })),
-    sameAs: [settings.social_facebook, settings.social_instagram, settings.social_tiktok].filter(Boolean),
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://iacademy-library.vercel.app/#website",
+        url: "https://iacademy-library.vercel.app/",
+        name: "iACADEMY Library",
+        alternateName: ["iACADEMY Library Makati", "iacademy-library.vercel.app"],
+      },
+      {
+        "@type": "Library",
+        "@id": "https://iacademy-library.vercel.app/#library",
+        url: "https://iacademy-library.vercel.app/",
+        name: settings.name,
+        description: settings.description,
+        logo: "https://iacademy-library.vercel.app/favicon.png?v=3",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: settings.address,
+        },
+        email: settings.email,
+        telephone: settings.phone,
+        openingHoursSpecification: hours.main.map((h) => ({
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: h.day_name,
+          description: h.hours_text,
+        })),
+        sameAs: [settings.social_facebook, settings.social_instagram, settings.social_tiktok].filter(Boolean),
+      },
+    ],
   };
   const safeJsonLd = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
 
