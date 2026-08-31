@@ -13,7 +13,7 @@ export default async function StaffSettingsPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-semibold text-navy-950">Site Settings</h1>
+      <h1 className="text-2xl font-extrabold text-navy-950">Site Settings</h1>
       <p className="mt-1 text-sm text-navy-700/60">
         Sitewide info shown across the navbar, footer, homepage, about, and contact pages.
       </p>

@@ -3,14 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getStaffContext } from "@/lib/staff-role";
+import { queueOrApplyChange, saveNotice } from "@/lib/change-requests";
 
 export async function saveAboutContent(formData: FormData) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
+  const supabase = await createClient();
 
   const id = formData.get("id") as string;
   const goalsRaw = (formData.get("goals") as string) ?? "";
@@ -23,9 +22,10 @@ export async function saveAboutContent(formData: FormData) {
     goals,
   };
 
-  const { error } = await supabase.from("about_content").update(payload).eq("id", id);
+  const { error } = await queueOrApplyChange({ supabase, userId: user.id, role,
+    table: "about_content", operation: "update", recordId: id, payload, title: "About page content" });
   if (error) throw new Error(error.message);
 
   revalidatePath("/about");
-  redirect("/staff/about");
+  redirect(`/staff/about?notice=${saveNotice(role)}`);
 }

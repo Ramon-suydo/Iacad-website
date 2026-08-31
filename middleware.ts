@@ -34,12 +34,23 @@ export async function middleware(request: NextRequest) {
 
   const isStaffRoute = request.nextUrl.pathname.startsWith("/staff");
   const isLoginRoute = request.nextUrl.pathname === "/staff/login";
+  let isApprovedStaff = false;
 
-  if (isStaffRoute && !isLoginRoute && !user) {
+  if (user && isStaffRoute) {
+    const { data: profile } = await supabase
+      .from("staff_profiles")
+      .select("role")
+      .eq("user_id", user.id)
+      .in("role", ["staff", "chief"])
+      .maybeSingle();
+    isApprovedStaff = Boolean(profile);
+  }
+
+  if (isStaffRoute && !isLoginRoute && !isApprovedStaff) {
     return NextResponse.redirect(new URL("/staff/login", request.url));
   }
 
-  if (isLoginRoute && user) {
+  if (isLoginRoute && isApprovedStaff) {
     return NextResponse.redirect(new URL("/staff", request.url));
   }
 

@@ -33,7 +33,7 @@ export default async function AboutPage() {
       />
 
       <Section eyebrow="Introduction" title="Who we are">
-        <div className="mx-auto max-w-3xl space-y-5 text-navy-700/80 leading-relaxed">
+        <div className="mx-auto max-w-3xl space-y-5 text-navy-700/80 leading-relaxed [text-align:justify] [text-justify:inter-word] hyphens-auto">
           {paragraphs(about?.introduction ?? "").map((p, i) => (
             <p key={i}>{p}</p>
           ))}
@@ -42,12 +42,12 @@ export default async function AboutPage() {
 
       <Section className="bg-navy-950">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <div className="rounded-xl border border-white/10 bg-navy-900 p-7">
-            <h3 className="font-serif text-lg font-semibold text-gold-400">Mission</h3>
+          <div className="rounded-xl border border-white/10 bg-navy-900 p-7 transition-all hover:-translate-y-1 hover:border-cobalt-500/30">
+            <h3 className="text-lg font-extrabold text-gold-400">Mission</h3>
             <p className="mt-3 text-sm leading-relaxed text-white/70">{about?.mission}</p>
           </div>
-          <div className="rounded-xl border border-white/10 bg-navy-900 p-7">
-            <h3 className="font-serif text-lg font-semibold text-gold-400">Vision</h3>
+          <div className="rounded-xl border border-white/10 bg-navy-900 p-7 transition-all hover:-translate-y-1 hover:border-cobalt-500/30">
+            <h3 className="text-lg font-extrabold text-gold-400">Vision</h3>
             <p className="mt-3 text-sm leading-relaxed text-white/70">{about?.vision}</p>
           </div>
         </div>
@@ -73,7 +73,7 @@ export default async function AboutPage() {
       <Section eyebrow="Visit Us" title="Where to find us">
         <div className="mx-auto max-w-3xl space-y-6">
           <Card className="!p-6">
-            <h3 className="font-serif text-base font-semibold text-navy-950">Location</h3>
+            <h3 className="text-base font-extrabold text-navy-950">Location</h3>
             <p className="mt-1 text-sm leading-relaxed text-navy-700/70">{settings.address}</p>
           </Card>
           <LibraryHoursTable main={hours.main} extension={hours.extension} />

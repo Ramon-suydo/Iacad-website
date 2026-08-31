@@ -18,7 +18,7 @@ export default async function StaffAboutPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-semibold text-navy-950">About Page Content</h1>
+      <h1 className="text-2xl font-extrabold text-navy-950">About Page Content</h1>
       <p className="mt-1 text-sm text-navy-700/60">
          Edit the mission statement and value cards shown on the public About page.
       </p>

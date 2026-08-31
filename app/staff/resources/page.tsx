@@ -20,7 +20,7 @@ export default async function StaffResourcesPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-2xl font-semibold text-navy-950">Resources</h1>
+          <h1 className="text-2xl font-extrabold text-navy-950">Resources</h1>
           <p className="mt-1 text-sm text-navy-700/60">
             Manage the resource categories shown on the public Resources page.
           </p>
@@ -54,7 +54,7 @@ export default async function StaffResourcesPage() {
                   </span>
                 )}
               </div>
-              <h2 className="mt-2 truncate font-serif text-lg font-semibold text-navy-950">{r.name}</h2>
+              <h2 className="mt-2 truncate text-lg font-extrabold text-navy-950">{r.name}</h2>
               <p className="mt-1 line-clamp-1 text-sm text-navy-700/70">{r.description}</p>
             </div>
 

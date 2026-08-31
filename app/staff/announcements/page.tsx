@@ -27,7 +27,7 @@ export default async function StaffAnnouncementsPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-2xl font-semibold text-navy-950">Announcements</h1>
+          <h1 className="text-2xl font-extrabold text-navy-950">Announcements</h1>
           <p className="mt-1 text-sm text-navy-700/60">
             Manage what shows up on the public Announcements page and homepage.
           </p>
@@ -66,7 +66,7 @@ export default async function StaffAnnouncementsPage() {
                   </span>
                 )}
               </div>
-              <h2 className="mt-2 truncate font-serif text-lg font-semibold text-navy-950">{a.title}</h2>
+              <h2 className="mt-2 truncate text-lg font-extrabold text-navy-950">{a.title}</h2>
               <p className="mt-1 line-clamp-1 text-sm text-navy-700/70">{a.summary}</p>
             </div>
 

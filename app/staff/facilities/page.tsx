@@ -22,7 +22,7 @@ type Facility = {
 function FacilityGroup({ title, items }: { title: string; items: Facility[] }) {
   return (
     <div className="mt-8">
-      <h2 className="font-serif text-lg font-semibold text-navy-950">{title}</h2>
+      <h2 className="text-lg font-extrabold text-navy-950">{title}</h2>
       <div className="mt-4 space-y-4">
         {items.length === 0 && (
           <p className="text-sm text-navy-700/60">No facilities in this campus yet.</p>
@@ -40,7 +40,7 @@ function FacilityGroup({ title, items }: { title: string; items: Facility[] }) {
               </div>
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="truncate font-serif text-base font-semibold text-navy-950">{f.name}</h3>
+                  <h3 className="truncate text-base font-extrabold text-navy-950">{f.name}</h3>
                   {f.pending_review && (
                     <span className="rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700">
                       Pending Review
@@ -82,7 +82,7 @@ export default async function StaffFacilitiesPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-2xl font-semibold text-navy-950">Facilities</h1>
+          <h1 className="text-2xl font-extrabold text-navy-950">Facilities</h1>
           <p className="mt-1 text-sm text-navy-700/60">
             Manage the UG and SHS facility listings shown on the public Facilities page.
           </p>

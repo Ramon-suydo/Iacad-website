@@ -28,7 +28,6 @@ async function run() {
       .jpeg({ quality: 78, mozjpeg: true })
       .toFile(tempPath);
 
-    const { size: originalSize } = await sharp(inputPath).metadata();
     const fs = await import("fs/promises");
     const oldStat = await fs.stat(inputPath);
     const newStat = await fs.stat(tempPath);

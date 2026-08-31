@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import Container from "./Container";
+import Reveal from "./Reveal";
 
 export default function Section({
   children,
@@ -20,15 +21,15 @@ export default function Section({
 }) {
   return (
     <section
-    className={`py-16 sm:py-20 [content-visibility:auto] [contain-intrinsic-size:1px_800px] ${className}`}
+    className={`library-section overflow-hidden py-14 sm:py-20 lg:py-24 [content-visibility:auto] [contain-intrinsic-size:1px_800px] ${className}`}
       >
       <Container>
         {(eyebrow || title || description) && (
-          <div className={`mb-12 ${center ? "text-center mx-auto max-w-2xl" : "max-w-2xl"}`}>
+          <Reveal className={`section-heading mb-9 sm:mb-12 ${center ? "text-center mx-auto max-w-2xl" : "max-w-2xl"}`}>
             {eyebrow && (
               <span
-                className={`mb-3 inline-block text-xs font-semibold uppercase tracking-[0.2em] ${
-                  dark ? "text-gold-400" : "text-gold-600"
+                className={`mb-3 inline-block text-xs font-bold uppercase tracking-[0.16em] ${
+                  dark ? "text-pop-cyan" : "text-cobalt-500"
                 }`}
               >
                 {eyebrow}
@@ -36,7 +37,7 @@ export default function Section({
             )}
             {title && (
               <h2
-                className={`font-serif text-3xl font-semibold sm:text-4xl ${
+                className={`text-2xl font-extrabold tracking-[-0.025em] min-[420px]:text-3xl sm:text-4xl ${
                   dark ? "text-white" : "text-navy-950"
                 }`}
               >
@@ -52,9 +53,9 @@ export default function Section({
                 {description}
               </p>
             )}
-          </div>
+          </Reveal>
         )}
-        {children}
+        <Reveal delay={90}>{children}</Reveal>
       </Container>
     </section>
   );

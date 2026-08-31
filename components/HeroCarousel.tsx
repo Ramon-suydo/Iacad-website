@@ -43,8 +43,8 @@ export default function HeroCarousel({
           key={slide.src}
           src={slide.src}
           alt={slide.alt}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
-            index === active ? "opacity-100" : "opacity-0"
+          className={`hero-ken-burns absolute inset-0 h-full w-full object-cover ${
+            index === active ? "is-active opacity-100" : "opacity-0"
           }`}
           onError={(e) => {
             (e.target as HTMLImageElement).style.display = "none";

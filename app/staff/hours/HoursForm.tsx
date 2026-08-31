@@ -34,7 +34,7 @@ export default function HoursForm({ hours }: { hours: LibraryHoursData }) {
       <input type="hidden" name="ids" value={allIds} />
 
       <div>
-        <h2 className="font-serif text-lg font-semibold text-navy-950">Main Library</h2>
+        <h2 className="text-lg font-extrabold text-navy-950">Main Library</h2>
         <div className="mt-4 space-y-2">
           {hours.main.map((day) => (
             <DayRow key={day.id} day={day} />
@@ -43,7 +43,7 @@ export default function HoursForm({ hours }: { hours: LibraryHoursData }) {
       </div>
 
       <div>
-        <h2 className="font-serif text-lg font-semibold text-navy-950">Library Extension</h2>
+        <h2 className="text-lg font-extrabold text-navy-950">Library Extension</h2>
         <div className="mt-4 space-y-2">
           {hours.extension.map((day) => (
             <DayRow key={day.id} day={day} />
@@ -52,7 +52,7 @@ export default function HoursForm({ hours }: { hours: LibraryHoursData }) {
       </div>
 
       <p className="text-xs text-navy-700/50">
-        Checking "Closed" for a day overrides whatever's typed in that field — the public site will show "Closed" regardless.
+        Checking &quot;Closed&quot; for a day overrides whatever&apos;s typed in that field — the public site will show &quot;Closed&quot; regardless.
       </p>
 
       <button

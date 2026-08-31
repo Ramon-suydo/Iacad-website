@@ -7,8 +7,11 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-navy-950 text-white/80">
-      <Container className="py-14">
+    <footer className="relative overflow-hidden bg-navy-950 text-white/80">
+      <div className="brand-rail" />
+      <div className="dot-grid absolute inset-0 opacity-20" />
+      <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-cobalt-bright/15 blur-3xl" />
+      <Container className="relative py-16">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="mb-4">
@@ -16,10 +19,10 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
                 <img src={settings.logo_url} alt={settings.short_name} className="h-10 w-auto" />
               ) : (
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-md bg-gold-500 text-navy-950 font-serif font-semibold text-lg">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-gradient-to-br from-cobalt-bright via-cobalt-500 to-navy-800 text-gold-400 font-serif font-semibold italic text-lg">
                     i
                   </span>
-                  <span className="font-serif text-lg font-semibold text-white">
+                  <span className="text-base font-extrabold text-white">
                     {settings.short_name}
                     <span className="ml-1.5 font-sans text-xs font-medium uppercase tracking-wider text-gold-400">
                       Library
@@ -34,7 +37,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
+            <h3 className="mb-4 text-xs font-extrabold uppercase tracking-[.16em] text-gold-400">
               Explore
             </h3>
             <ul className="space-y-2.5">
@@ -52,7 +55,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
+            <h3 className="mb-4 text-xs font-extrabold uppercase tracking-[.16em] text-gold-400">
               More
             </h3>
             <ul className="space-y-2.5">
@@ -70,7 +73,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
+            <h3 className="mb-4 text-xs font-extrabold uppercase tracking-[.16em] text-gold-400">
               Contact
             </h3>
             <ul className="space-y-2.5 text-sm text-white/60">

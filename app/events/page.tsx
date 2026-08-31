@@ -36,7 +36,7 @@ export default async function EventsPage() {
           {sorted?.map((e) => (
             <div
               key={e.id}
-              className="flex gap-5 rounded-xl border border-navy-900/8 bg-white p-6 shadow-card transition-all hover:shadow-cardHover"
+              className="flex gap-5 rounded-xl border border-navy-900/8 bg-white p-6 shadow-card transition-all hover:-translate-y-1 hover:border-cobalt-500/25 hover:shadow-cardHover"
             >
               <div className="flex-shrink-0 rounded-lg bg-navy-950 px-4 py-3 text-center">
                 <p className="font-serif text-2xl font-semibold text-gold-400">
@@ -47,7 +47,7 @@ export default async function EventsPage() {
                 </p>
               </div>
               <div>
-                <h2 className="font-serif text-lg font-semibold text-navy-950">
+                <h2 className="text-lg font-extrabold text-navy-950">
                   {e.title}
                 </h2>
                 <p className="mt-1 text-xs font-medium text-gold-600">

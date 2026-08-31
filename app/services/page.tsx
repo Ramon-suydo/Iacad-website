@@ -4,6 +4,7 @@ import PageHeader from "@/components/PageHeader";
 import Section from "@/components/Section";
 import Card from "@/components/Card";
 import { createClient } from "@/lib/supabase/server";
+import RevealGroup from "@/components/RevealGroup";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -39,10 +40,11 @@ export default async function ServicesPage() {
       />
 
       <Section>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <RevealGroup className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services?.map((service) => (
             <Card key={service.id}>
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-navy-950">
+              <div>
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-to-br from-cobalt-bright via-cobalt-500 to-navy-800 shadow-[0_10px_24px_-14px_rgba(91,127,255,.8)]">
                 <svg
                   width="20"
                   height="20"
@@ -56,7 +58,8 @@ export default async function ServicesPage() {
                   <path d={iconPaths[service.icon]} />
                 </svg>
               </div>
-              <h3 className="mt-4 font-serif text-lg font-semibold text-navy-950">
+              </div>
+              <h3 className="mt-4 text-lg font-extrabold text-navy-950">
                 {service.name}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-navy-700/70">
@@ -64,12 +67,12 @@ export default async function ServicesPage() {
               </p>
             </Card>
           ))}
-        </div>
+        </RevealGroup>
       </Section>
 
       <Section className="bg-navy-950">
         <div className="flex flex-col items-center gap-5 rounded-2xl border border-white/10 px-8 py-12 text-center sm:px-16">
-          <h2 className="font-serif text-2xl font-semibold text-white sm:text-3xl">
+          <h2 className="text-2xl font-extrabold text-white sm:text-3xl">
             Need help with a specific request?
           </h2>
           <p className="max-w-xl text-white/60">

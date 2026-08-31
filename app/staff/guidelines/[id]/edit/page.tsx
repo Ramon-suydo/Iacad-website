@@ -16,7 +16,7 @@ export default async function EditGuidelinePage({
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-semibold text-navy-950">Edit Guideline Section</h1>
+      <h1 className="text-2xl font-extrabold text-navy-950">Edit Guideline Section</h1>
       <div className="mt-6">
         <GuidelineForm guideline={guideline} />
       </div>

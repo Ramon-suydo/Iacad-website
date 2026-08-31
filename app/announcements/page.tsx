@@ -59,7 +59,7 @@ export default async function AnnouncementsPage() {
                   })}
                 </span>
               </div>
-              <h2 className="mt-3 font-serif text-xl font-semibold text-navy-950">
+              <h2 className="mt-3 text-xl font-extrabold text-navy-950">
                 {a.title}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-navy-700/70">

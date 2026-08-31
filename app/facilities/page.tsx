@@ -3,6 +3,8 @@ import PageHeader from "@/components/PageHeader";
 import Section from "@/components/Section";
 import SafeImage from "@/components/SafeImage";
 import { createClient } from "@/lib/supabase/server";
+import RevealGroup from "@/components/RevealGroup";
+import { getFacilityAccent } from "@/lib/facility-accent";
 
 export const metadata: Metadata = {
   title: "Facilities",
@@ -43,23 +45,28 @@ function FacilityGrid({ campus, items }: { campus: "UG" | "SHS"; items: Facility
       title={label.title}
       description={label.description}
     >
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((facility) => (
+      <RevealGroup className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((facility, index) => {
+          const accent = getFacilityAccent(facility.name, facility.description, index);
+          return (
           <div
             key={facility.slug}
-            className="group overflow-hidden rounded-xl border border-navy-900/8 bg-white shadow-card transition-all hover:shadow-cardHover"
+            className={`index-card group h-full overflow-hidden rounded-xl border border-navy-900/8 bg-white shadow-card transition-all duration-500 ease-[cubic-bezier(.2,.8,.2,1.12)] hover:-translate-y-1.5 hover:border-cobalt-bright/35 active:translate-y-0 active:scale-[.99] ${accent.bloom}`}
           >
             <div className="relative aspect-[4/3] overflow-hidden bg-navy-100">
               {facility.image_url && (
                 <SafeImage
                   src={facility.image_url}
                   alt={facility.name}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07] motion-reduce:transform-none"
                 />
               )}
+              <span className={`absolute right-3 top-3 rotate-2 rounded-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[.08em] shadow-lg transition-transform duration-300 group-hover:rotate-0 group-hover:scale-105 motion-reduce:transform-none ${accent.chip}`}>
+                {accent.label}
+              </span>
             </div>
             <div className="p-6">
-              <h3 className="font-serif text-lg font-semibold text-navy-950">{facility.name}</h3>
+              <h3 className="text-lg font-extrabold text-navy-950">{facility.name}</h3>
               <p className="mt-2 text-sm leading-relaxed text-navy-700/70">{facility.description}</p>
               {facility.tags && facility.tags.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -75,8 +82,9 @@ function FacilityGrid({ campus, items }: { campus: "UG" | "SHS"; items: Facility
               )}
             </div>
           </div>
-        ))}
-      </div>
+          );
+        })}
+      </RevealGroup>
     </Section>
   );
 }

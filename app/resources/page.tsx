@@ -32,7 +32,7 @@ export default async function ResourcesPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {resourceCategories?.map((category) => (
             <Card key={category.id} className="!p-7">
-              <h3 className="font-serif text-xl font-semibold text-navy-950">
+              <h3 className="text-xl font-extrabold text-navy-950">
                 {category.name}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-navy-700/70">

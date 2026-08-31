@@ -18,7 +18,7 @@ export default function NotFound() {
         <span className="font-serif text-7xl font-semibold text-gold-400 sm:text-8xl">
           404
         </span>
-        <h1 className="mt-4 font-serif text-2xl font-semibold text-white sm:text-3xl">
+        <h1 className="mt-4 text-2xl font-extrabold text-white sm:text-3xl">
           This page couldn&apos;t be found
         </h1>
         <p className="mx-auto mt-3 max-w-md text-white/60">

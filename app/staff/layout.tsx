@@ -1,7 +1,10 @@
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import Image from "next/image";
 import { signOutStaff } from "./actions";
+import StaffNav from "@/components/StaffNav";
+import StaffToast from "@/components/StaffToast";
+import { Suspense } from "react";
 
 const baseNav = [
   { href: "/staff/announcements", label: "Announcements" },
@@ -33,57 +36,62 @@ export default async function StaffLayout({
     .from("staff_profiles")
     .select("full_name, role")
     .eq("user_id", user.id)
-    .single();
+    .maybeSingle();
 
   if (!profile) {
-    await supabase.auth.signOut();
-    redirect("/staff/login");
+    return <>{children}</>;
   }
 
   const staffNav =
     profile.role === "chief"
       ? [{ href: "/staff/approvals", label: "Approvals" }, ...baseNav]
-      : baseNav;
+      : [{ href: "/staff/requests", label: "My Requests" }, ...baseNav];
 
   return (
-    <div className="min-h-screen bg-navy-50/30">
-      <header className="border-b border-navy-900/10 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <span className="font-serif text-lg font-semibold text-navy-950">
-            Library Staff Panel
-          </span>
+    <div className="staff-shell min-h-screen bg-paper">
+      <header className="border-b border-navy-900/10 bg-white text-navy-950 shadow-[0_10px_30px_-24px_rgba(7,11,31,.35)]">
+        <div className="relative mx-auto flex max-w-[1240px] items-center justify-between gap-3 px-4 py-4 sm:px-7 sm:py-5">
+          <Link href="/staff" className="flex items-center gap-3">
+            <Image
+              src="/images/library/facilities/iAcademyLogo%20(3).png"
+              alt="iACADEMY Makati"
+              width={1920}
+              height={615}
+              className="h-auto w-[150px] object-contain sm:w-[180px]"
+              priority
+            />
+            <span className="hidden border-l border-navy-900/10 pl-3 text-sm font-extrabold tracking-tight min-[520px]:block">
+              Library Staff <span className="block text-[9px] font-bold uppercase tracking-[.16em] text-cobalt-500">Content Panel</span>
+            </span>
+          </Link>
           <div className="flex items-center gap-4">
-            <div className="text-right">
-              <span className="block text-sm text-navy-700/60">{profile.full_name}</span>
+            <div className="hidden text-right sm:block">
+              <span className="block text-sm text-navy-700/70">{profile.full_name}</span>
               {profile.role === "chief" && (
                 <span className="text-xs font-semibold uppercase tracking-wide text-gold-600">
                   Chief Librarian
+                </span>
+              )}
+              {profile.role === "staff" && (
+                <span className="text-xs font-semibold uppercase tracking-wide text-cobalt-500">
+                  Librarian
                 </span>
               )}
             </div>
             <form action={signOutStaff}>
               <button
                 type="submit"
-                className="rounded-md border border-navy-900/15 px-3 py-1.5 text-xs font-semibold text-navy-700/70 hover:border-navy-900/30 hover:text-navy-950"
+                className="rounded-lg border border-navy-900/15 px-3 py-2 text-xs font-semibold text-navy-700/70 hover:border-cobalt-500/30 hover:bg-cobalt-500/5 hover:text-navy-950"
               >
                 Log out
               </button>
             </form>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-6xl flex-wrap gap-x-6 gap-y-2 px-6 pb-3">
-          {staffNav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm font-medium text-navy-700/70 hover:text-navy-950"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <StaffNav items={staffNav} />
       </header>
-      <div className="mx-auto max-w-6xl px-6 py-8">{children}</div>
+      <div className="mx-auto max-w-[1240px] px-4 py-7 sm:px-7 sm:py-12">{children}</div>
+      <Suspense fallback={null}><StaffToast /></Suspense>
     </div>
   );
 }

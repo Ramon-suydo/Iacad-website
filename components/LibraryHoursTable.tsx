@@ -8,13 +8,13 @@ export default function LibraryHoursTable({
   extension: DayHours[];
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-navy-900/10">
-      <div className="grid grid-cols-3 bg-navy-950 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-white/70">
+    <div className="overflow-x-auto rounded-lg border border-navy-900/10">
+      <div className="grid min-w-[520px] grid-cols-3 bg-navy-950 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-white/70">
         <span>Day</span>
         <span className="text-right">Main Library</span>
         <span className="text-right">Extension</span>
       </div>
-      <div className="divide-y divide-navy-900/8">
+      <div className="min-w-[520px] divide-y divide-navy-900/8">
         {main.map((day, i) => {
           const ext = extension[i];
           return (

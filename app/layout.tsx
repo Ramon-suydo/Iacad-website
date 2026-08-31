@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Montserrat, Roboto, Fraunces } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -7,10 +7,18 @@ import Footer from "@/components/Footer";
 import { getSiteSettings } from "@/lib/site-settings";
 import { getLibraryHours } from "@/lib/library-hours";
 
-const inter = Inter({
+const roboto = Roboto({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-roboto",
   display: "swap",
+  weight: ["400", "500", "700", "900"],
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: "swap",
+  weight: ["500", "600", "700", "800", "900"],
 });
 
 const fraunces = Fraunces({
@@ -28,6 +36,11 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${settings.name}`,
     },
     description: settings.description,
+    icons: {
+      icon: "/favicon.png",
+      shortcut: "/favicon.png",
+      apple: "/favicon.png",
+    },
     metadataBase: new URL("https://iacademy-library.vercel.app"),
     openGraph: {
       title: settings.name,
@@ -77,17 +90,18 @@ export default async function RootLayout({
     })),
     sameAs: [settings.social_facebook, settings.social_instagram, settings.social_tiktok].filter(Boolean),
   };
+  const safeJsonLd = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
 
   return (
     <html lang="en">
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd }}
         />
       </head>
       <body
-        className={`${inter.variable} ${fraunces.variable} font-sans antialiased flex min-h-screen flex-col overflow-x-hidden`}
+        className={`${roboto.variable} ${montserrat.variable} ${fraunces.variable} font-sans antialiased flex min-h-screen flex-col overflow-x-hidden`}
       >
         <a href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-100 focus:rounded-md focus:bg-gold-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-navy-950"

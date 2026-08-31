@@ -15,7 +15,7 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
       <input type="hidden" name="current_logo_url" value={settings.logo_url ?? ""} />
 
       <div>
-        <h2 className="font-serif text-lg font-semibold text-navy-950">General</h2>
+        <h2 className="text-lg font-extrabold text-navy-950">General</h2>
         <div className="mt-4 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -43,7 +43,7 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
       </div>
 
       <div>
-        <h2 className="font-serif text-lg font-semibold text-navy-950">Logo</h2>
+        <h2 className="text-lg font-extrabold text-navy-950">Logo</h2>
         <div className="mt-4">
           {logoPreview && <img src={logoPreview} alt="Logo preview" className="mb-3 h-16 w-auto rounded-md bg-navy-950 p-2" />}
           <input type="file" name="logo" accept="image/*"
@@ -54,7 +54,7 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
       </div>
 
       <div>
-        <h2 className="font-serif text-lg font-semibold text-navy-950">Hero Section</h2>
+        <h2 className="text-lg font-extrabold text-navy-950">Hero Section</h2>
         <div className="mt-4 space-y-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-navy-950">Eyebrow text</label>
@@ -66,6 +66,28 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
             <textarea name="hero_headline" required rows={2} defaultValue={settings.hero_headline}
               className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
           </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-navy-950">Primary button label</label>
+              <input name="hero_primary_cta_label" required defaultValue={settings.hero_primary_cta_label}
+                className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-navy-950">Primary button link</label>
+              <input name="hero_primary_cta_href" required defaultValue={settings.hero_primary_cta_href}
+                className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-navy-950">Secondary button label</label>
+              <input name="hero_secondary_cta_label" required defaultValue={settings.hero_secondary_cta_label}
+                className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-navy-950">Secondary button link</label>
+              <input name="hero_secondary_cta_href" required defaultValue={settings.hero_secondary_cta_href}
+                className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+            </div>
+          </div>
           <div>
             {heroPreview && <img src={heroPreview} alt="Hero preview" className="mb-3 h-44 w-full rounded-md object-cover" />}
             <input type="file" name="hero_image" accept="image/*"
@@ -73,11 +95,23 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
               className="w-full text-sm text-navy-700/70 file:mr-3 file:rounded-md file:border-0 file:bg-navy-900/5 file:px-3 file:py-2 file:text-sm file:font-medium file:text-navy-950 hover:file:bg-navy-900/10" />
             <p className="mt-1 text-xs text-navy-700/50">First slide of the homepage hero carousel.</p>
           </div>
+          <div>
+            <p className="mb-3 text-sm font-semibold text-navy-950">Additional carousel images</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {([2, 3, 4, 5] as const).map((n) => (
+                <div key={n}>
+                  <label className="mb-1.5 block text-xs font-medium text-navy-700/70">Slide {n} path or URL</label>
+                  <input name={`hero_image_${n}`} required defaultValue={settings[`hero_image_${n}`]}
+                    className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
       <div>
-        <h2 className="font-serif text-lg font-semibold text-navy-950">Homepage Stats</h2>
+        <h2 className="text-lg font-extrabold text-navy-950">Homepage Stats</h2>
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {([1, 2, 3, 4] as const).map((n) => (
             <div key={n} className="rounded-lg border border-navy-900/10 p-4">
@@ -93,7 +127,79 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
       </div>
 
       <div>
-        <h2 className="font-serif text-lg font-semibold text-navy-950">Contact & Location</h2>
+        <h2 className="text-lg font-extrabold text-navy-950">Homepage Sections</h2>
+        <p className="mt-1 text-xs text-navy-700/50">Edit the headings, supporting copy, and link labels shown below the homepage stats.</p>
+        <div className="mt-4 space-y-5">
+          {([
+            { name: "Services", prefix: "home_services", hasEyebrow: true, hasDescription: true },
+            { name: "Facilities", prefix: "home_facilities", hasEyebrow: true, hasDescription: true },
+          ] as const).map((section) => (
+            <div key={section.prefix} className="rounded-xl border border-navy-900/10 bg-white p-4 sm:p-5">
+              <h3 className="text-sm font-extrabold text-navy-950">{section.name}</h3>
+              <div className="mt-3 space-y-3">
+                <input name={`${section.prefix}_eyebrow`} required defaultValue={settings[`${section.prefix}_eyebrow`]}
+                  aria-label={`${section.name} eyebrow`}
+                  className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                <input name={`${section.prefix}_title`} required defaultValue={settings[`${section.prefix}_title`]}
+                  aria-label={`${section.name} title`}
+                  className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                <textarea name={`${section.prefix}_description`} required rows={2} defaultValue={settings[`${section.prefix}_description`]}
+                  aria-label={`${section.name} description`}
+                  className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <input name={`${section.prefix}_link_label`} required defaultValue={settings[`${section.prefix}_link_label`]}
+                    aria-label={`${section.name} link label`}
+                    className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                  <input name={`${section.prefix}_link_href`} required defaultValue={settings[`${section.prefix}_link_href`]}
+                    aria-label={`${section.name} link destination`}
+                    className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {([
+              { name: "Announcements", prefix: "home_announcements" },
+              { name: "Events", prefix: "home_events" },
+            ] as const).map((section) => (
+              <div key={section.prefix} className="rounded-xl border border-navy-900/10 bg-white p-4 sm:p-5">
+                <h3 className="text-sm font-extrabold text-navy-950">{section.name}</h3>
+                <div className="mt-3 space-y-3">
+                  <input name={`${section.prefix}_title`} required defaultValue={settings[`${section.prefix}_title`]}
+                    aria-label={`${section.name} title`}
+                    className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                  <input name={`${section.prefix}_link_label`} required defaultValue={settings[`${section.prefix}_link_label`]}
+                    aria-label={`${section.name} link label`}
+                    className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                  <input name={`${section.prefix}_link_href`} required defaultValue={settings[`${section.prefix}_link_href`]}
+                    aria-label={`${section.name} link destination`}
+                    className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-xl border border-navy-900/10 bg-white p-4 sm:p-5">
+            <h3 className="text-sm font-extrabold text-navy-950">Closing call to action</h3>
+            <div className="mt-3 space-y-3">
+              <input name="home_cta_title" required defaultValue={settings.home_cta_title} aria-label="CTA title"
+                className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+              <textarea name="home_cta_description" required rows={2} defaultValue={settings.home_cta_description} aria-label="CTA description"
+                className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input name="home_cta_button_label" required defaultValue={settings.home_cta_button_label} aria-label="CTA button label"
+                  className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+                <input name="home_cta_button_href" required defaultValue={settings.home_cta_button_href} aria-label="CTA button link"
+                  className="w-full rounded-md border border-navy-900/15 px-3 py-2 text-sm outline-none focus:border-gold-500" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-lg font-extrabold text-navy-950">Contact & Location</h2>
         <div className="mt-4 space-y-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-navy-950">Address</label>
@@ -116,7 +222,7 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
       </div>
 
       <div>
-        <h2 className="font-serif text-lg font-semibold text-navy-950">Social Links</h2>
+        <h2 className="text-lg font-extrabold text-navy-950">Social Links</h2>
         <div className="mt-4 space-y-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-navy-950">Facebook URL</label>
@@ -137,7 +243,7 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
       </div>
 
       <p className="text-xs text-navy-700/50">
-        Looking for operating hours? That's managed on its own "Library Hours" page in the staff nav.
+        Looking for operating hours? That&apos;s managed on its own &quot;Library Hours&quot; page in the staff nav.
       </p>
 
       <button type="submit" className="rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400">

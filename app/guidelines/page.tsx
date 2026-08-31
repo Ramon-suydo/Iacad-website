@@ -32,7 +32,7 @@ export default async function GuidelinesPage() {
         <div className="mx-auto max-w-4xl space-y-6">
           {guidelineSections?.map((section) => (
             <Card key={section.id} className="!p-7">
-              <h2 className="font-serif text-xl font-semibold text-navy-950">
+              <h2 className="text-xl font-extrabold text-navy-950">
                 {section.title}
               </h2>
               <ul className="mt-5 space-y-3">
@@ -70,7 +70,7 @@ export default async function GuidelinesPage() {
 
       <Section className="bg-navy-950" center>
         <div className="mx-auto max-w-xl text-center">
-          <h2 className="font-serif text-2xl font-semibold text-white sm:text-3xl">
+          <h2 className="text-2xl font-extrabold text-white sm:text-3xl">
             Questions about our policies?
           </h2>
           <p className="mt-3 text-white/60">
