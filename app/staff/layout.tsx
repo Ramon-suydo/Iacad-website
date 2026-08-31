@@ -66,7 +66,7 @@ export default async function StaffLayout({
       : [{ href: "/staff/requests", label: "My Requests" }, ...baseNav];
 
   return (
-    <div className="staff-shell min-h-screen bg-paper">
+    <div className="staff-shell min-h-screen bg-white">
       <header className="border-b border-navy-900/10 bg-white text-navy-950 shadow-[0_10px_30px_-24px_rgba(7,11,31,.35)]">
         <div className="relative mx-auto flex max-w-[1240px] items-center justify-between gap-3 px-4 py-4 sm:px-7 sm:py-5">
           <Link href="/staff" className="flex items-center gap-3">
