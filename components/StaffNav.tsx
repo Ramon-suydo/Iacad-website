@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 export default function StaffNav({
   items,
 }: {
-  items: { href: string; label: string }[];
+  items: { href: string; label: string; badgeCount?: number }[];
 }) {
   const pathname = usePathname();
 
@@ -20,6 +20,11 @@ export default function StaffNav({
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
+            aria-label={
+              item.badgeCount
+                ? `${item.label}, ${item.badgeCount} pending request${item.badgeCount === 1 ? "" : "s"}`
+                : undefined
+            }
             style={{
               color: active ? "#ffffff" : "#24396f",
               backgroundColor: active ? "#3b5bff" : "transparent",
@@ -31,6 +36,18 @@ export default function StaffNav({
             }`}
           >
             {item.label}
+            {!!item.badgeCount && (
+              <span
+                aria-hidden="true"
+                className={`ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-extrabold leading-none ${
+                  active
+                    ? "bg-white text-cobalt-500"
+                    : "bg-red-600 text-white"
+                }`}
+              >
+                {item.badgeCount > 99 ? "99+" : item.badgeCount}
+              </span>
+            )}
           </Link>
         );
       })}

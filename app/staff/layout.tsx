@@ -16,6 +16,7 @@ const baseNav = [
   { href: "/staff/about", label: "About Page" },
   { href: "/staff/hours", label: "Library Hours" },
   { href: "/staff/settings", label: "Site Settings" },
+  { href: "/staff/account", label: "Account" },
 ];
 
 export default async function StaffLayout({
@@ -42,9 +43,26 @@ export default async function StaffLayout({
     return <>{children}</>;
   }
 
+  let pendingApprovalCount = 0;
+  if (profile.role === "chief") {
+    const { count } = await supabase
+      .from("change_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending");
+
+    pendingApprovalCount = count ?? 0;
+  }
+
   const staffNav =
     profile.role === "chief"
-      ? [{ href: "/staff/approvals", label: "Approvals" }, ...baseNav]
+      ? [
+          {
+            href: "/staff/approvals",
+            label: "Approvals",
+            badgeCount: pendingApprovalCount,
+          },
+          ...baseNav,
+        ]
       : [{ href: "/staff/requests", label: "My Requests" }, ...baseNav];
 
   return (
