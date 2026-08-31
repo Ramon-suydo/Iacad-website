@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat, Roboto, Fraunces } from "next/font/google";
 import { headers } from "next/headers";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -134,6 +135,7 @@ export default async function RootLayout({
           {children}
         </main>
         {!isStaffRoute && <Footer settings={settings} />}
+        <Analytics />
       </body>
     </html>
   );
