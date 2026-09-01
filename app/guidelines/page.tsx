@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Guidelines",
-  description: "Review the policies and guidelines for using the iACADEMY Library.",
+  description: "Review the rules and regulations for using the iACADEMY Library.",
 };
 
 export const revalidate = 0;
@@ -24,8 +24,8 @@ export default async function GuidelinesPage() {
     <>
       <PageHeader
         eyebrow="Guidelines"
-        title="Library policies and etiquette"
-        description="Please review the following guidelines to help maintain a productive and respectful environment for everyone."
+        title="Library rules and regulations"
+        description="Please review the following rules and regulations to help maintain a productive and respectful environment for everyone."
       />
 
       <Section>

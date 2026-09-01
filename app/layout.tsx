@@ -29,37 +29,40 @@ const fraunces = Fraunces({
   weight: ["400", "500", "600", "700"],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings();
-  return {
-    title: {
-      default: `${settings.name} | ${settings.tagline}`,
-      template: `%s | ${settings.name}`,
-    },
-    description: settings.description,
-    applicationName: "iACADEMY Library",
-    alternates: { canonical: "/" },
-    icons: {
-      icon: [
-        { url: "/favicon.png?v=3", type: "image/png", sizes: "512x512" },
-        { url: "/icon.png?v=3", type: "image/png", sizes: "512x512" },
-      ],
-      shortcut: "/favicon.png?v=3",
-      apple: [{ url: "/apple-icon.png?v=3", type: "image/png", sizes: "512x512" }],
-    },
-    metadataBase: new URL("https://iacademy-library.vercel.app"),
-    openGraph: {
-      title: settings.name,
-      description: settings.description,
-      siteName: "iACADEMY Library",
-      url: "/",
-      type: "website",
-    },
-    verification: {
-      google: "du1dH-xq54pFndAxIHEYOLblOZ5XRS_bGLyk1hJ4NoM",
-    },
-  };
-}
+const SITE_URL = "https://iacademy-library.vercel.app";
+const SITE_NAME = "iACADEMY Library";
+const SITE_TITLE = "iACADEMY Library | Knowledge. Access. Excellence.";
+const SITE_DESCRIPTION =
+  "The official library portal of iACADEMY - informational hub for resources, services, facilities, and academic support across the Undergraduate programs.";
+
+export const metadata: Metadata = {
+  title: {
+    default: SITE_TITLE,
+    template: "%s | iACADEMY Library",
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  alternates: { canonical: SITE_URL },
+  icons: {
+    icon: [
+      { url: "/favicon.png?v=3", type: "image/png", sizes: "512x512" },
+      { url: "/icon.png?v=3", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: "/favicon.png?v=3",
+    apple: [{ url: "/apple-icon.png?v=3", type: "image/png", sizes: "512x512" }],
+  },
+  metadataBase: new URL(SITE_URL),
+  openGraph: {
+    siteName: SITE_NAME,
+    title: SITE_TITLE,
+    description: "The official library portal of iACADEMY.",
+    url: SITE_URL,
+    type: "website",
+  },
+  verification: {
+    google: "du1dH-xq54pFndAxIHEYOLblOZ5XRS_bGLyk1hJ4NoM",
+  },
+};
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -84,19 +87,30 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        logo: `${SITE_URL}/logo.png`,
+        sameAs: [settings.social_facebook, settings.social_instagram, settings.social_tiktok].filter(Boolean),
+      },
+      {
         "@type": "WebSite",
-        "@id": "https://iacademy-library.vercel.app/#website",
-        url: "https://iacademy-library.vercel.app/",
-        name: "iACADEMY Library",
+        "@id": `${SITE_URL}/#website`,
+        url: `${SITE_URL}/`,
+        name: SITE_NAME,
         alternateName: ["iACADEMY Library Makati", "iacademy-library.vercel.app"],
+        publisher: {
+          "@id": `${SITE_URL}/#organization`,
+        },
       },
       {
         "@type": "Library",
-        "@id": "https://iacademy-library.vercel.app/#library",
-        url: "https://iacademy-library.vercel.app/",
+        "@id": `${SITE_URL}/#library`,
+        url: `${SITE_URL}/`,
         name: settings.name,
         description: settings.description,
-        logo: "https://iacademy-library.vercel.app/favicon.png?v=3",
+        logo: `${SITE_URL}/logo.png`,
         address: {
           "@type": "PostalAddress",
           streetAddress: settings.address,
@@ -108,7 +122,6 @@ export default async function RootLayout({
           dayOfWeek: h.day_name,
           description: h.hours_text,
         })),
-        sameAs: [settings.social_facebook, settings.social_instagram, settings.social_tiktok].filter(Boolean),
       },
     ],
   };

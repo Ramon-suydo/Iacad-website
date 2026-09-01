@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { saveAboutContent } from "./actions";
+import { getLibraryStaff, type LibraryStaffMember } from "@/lib/about-team";
 
 type AboutContent = {
   id: string;
@@ -8,11 +10,14 @@ type AboutContent = {
   mission: string;
   vision: string;
   goals: string[];
+  staff_members?: LibraryStaffMember[];
 };
 
 export default function AboutForm({ content }: { content: AboutContent }) {
+  const staffMembers = getLibraryStaff(content.staff_members);
+
   return (
-    <form action={saveAboutContent} className="max-w-2xl space-y-8">
+    <form action={saveAboutContent} className="max-w-3xl space-y-8">
       <input type="hidden" name="id" value={content.id} />
 
       <div>
@@ -60,6 +65,37 @@ export default function AboutForm({ content }: { content: AboutContent }) {
         />
         <p className="mt-1 text-xs text-navy-700/50">One goal per line.</p>
       </div>
+
+      <section className="border-t border-navy-900/10 pt-8">
+        <h2 className="text-lg font-extrabold text-navy-950">Library Staff</h2>
+        <p className="mt-1 text-xs text-navy-700/50">Edit the names, titles, and optional descriptions shown with the staff portraits.</p>
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          {staffMembers.map((member, index) => (
+            <div key={member.image_url} className="rounded-xl border border-navy-900/10 bg-white p-5">
+              <div className="relative mb-4 aspect-[4/3] overflow-hidden rounded-lg bg-navy-900">
+                <Image src={member.image_url} alt="" fill sizes="(min-width: 640px) 340px, calc(100vw - 4rem)" className="object-cover object-top" />
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-navy-950">Name</label>
+                  <input name={`staff_name_${index}`} required defaultValue={member.name}
+                    className="w-full border border-navy-900/15 px-3 py-2 text-sm outline-none" />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-navy-950">Title</label>
+                  <input name={`staff_title_${index}`} required defaultValue={member.title}
+                    className="w-full border border-navy-900/15 px-3 py-2 text-sm outline-none" />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-navy-950">Description <span className="font-normal text-navy-700/50">(optional)</span></label>
+                  <textarea name={`staff_description_${index}`} rows={4} defaultValue={member.description}
+                    className="w-full border border-navy-900/15 px-3 py-2 text-sm outline-none" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <button
         type="submit"
