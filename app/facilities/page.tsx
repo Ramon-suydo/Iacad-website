@@ -15,12 +15,12 @@ export const revalidate = 0;
 
 const campusLabels: Record<string, { title: string; description: string }> = {
   UG: {
-    title: "Undergraduate Library",
+    title: "Main Library",
     description:
       "Spaces supporting the School of Computing, School of Design and the Arts, and School of Business and Liberal Arts.",
   },
   SHS: {
-    title: "Senior High School Library",
+    title: "Library Extension",
     description:
       "Dedicated facilities designed for the academic and research needs of Senior High School students.",
   },
@@ -41,7 +41,7 @@ function FacilityGrid({ campus, items }: { campus: "UG" | "SHS"; items: Facility
 
   return (
     <Section
-      eyebrow={campus === "UG" ? "Undergraduate" : "Senior High School"}
+      eyebrow={campus === "UG" ? "Main Library" : "Library Extension"}
       title={label.title}
       description={label.description}
     >
@@ -58,12 +58,10 @@ function FacilityGrid({ campus, items }: { campus: "UG" | "SHS"; items: Facility
                 <SafeImage
                   src={facility.image_url}
                   alt={facility.name}
+                  quality={90}
                   className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07] motion-reduce:transform-none"
                 />
               )}
-              <span className={`absolute right-3 top-3 rotate-2 rounded-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[.08em] shadow-lg transition-transform duration-300 group-hover:rotate-0 group-hover:scale-105 motion-reduce:transform-none ${accent.chip}`}>
-                {accent.label}
-              </span>
             </div>
             <div className="p-6">
               <h3 className="text-lg font-extrabold text-navy-950">{facility.name}</h3>

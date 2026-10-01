@@ -35,7 +35,7 @@ export default async function ServicesPage() {
     <>
       <PageHeader
         eyebrow="Services"
-        title="Support designed for every stage of your work"
+        title="Your learning comes first"
         description="From borrowing books to booking group study rooms, our services are built to help you focus on what matters."
       />
 

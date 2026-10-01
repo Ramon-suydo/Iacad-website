@@ -165,12 +165,10 @@ export default async function HomePage() {
                   <SafeImage
                     src={facility.image_url}
                     alt={facility.name}
+                    quality={90}
                     className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07] motion-reduce:transform-none"
                   />
                 )}
-                <span className={`absolute right-3 top-3 rotate-2 rounded-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[.08em] shadow-lg transition-transform duration-300 group-hover:rotate-0 group-hover:scale-105 motion-reduce:transform-none ${accent.chip}`}>
-                  {accent.label}
-                </span>
               </div>
               <div className="p-5">
                 <span className="text-xs font-semibold uppercase tracking-wide text-gold-400">

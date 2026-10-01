@@ -42,7 +42,7 @@ export default async function ContactPage() {
     <>
       <PageHeader
         eyebrow="Contact"
-        title="We're here to help"
+        title="Count on us"
         description="Reach out to the iACADEMY Library team for inquiries, feedback, or assistance with any service."
       />
 

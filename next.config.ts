@@ -2,6 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    serverActions: {
+      // Allow a 5 MB photo plus multipart form fields and headers.
+      bodySizeLimit: "6mb",
+    },
+  },
   async headers() {
     const securityHeaders = [
       { key: "X-Content-Type-Options", value: "nosniff" },
@@ -24,6 +30,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    qualities: [75, 90],
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {

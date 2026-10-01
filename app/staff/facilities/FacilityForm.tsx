@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { saveFacility } from "./actions";
 
 type Facility = {
@@ -16,13 +16,29 @@ type Facility = {
 
 export default function FacilityForm({ facility }: { facility?: Facility }) {
   const [preview, setPreview] = useState<string | null>(facility?.image_url ?? null);
+  const [photoWarning, setPhotoWarning] = useState<string | null>(null);
   const [state, formAction, pending] = useActionState(saveFacility, null);
+
+  useEffect(() => {
+    if (!preview?.startsWith("blob:")) return;
+    const image = new Image();
+    image.onload = () => {
+      if (image.naturalWidth < 1200 || image.naturalHeight < 900) {
+        setPhotoWarning(`This photo is ${image.naturalWidth} × ${image.naturalHeight} pixels and may look blurry when enlarged. Choose the original photo, ideally at least 1200 × 900 pixels.`);
+      }
+    };
+    image.src = preview;
+
+    return () => {
+      image.onload = null;
+      URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
+    setPhotoWarning(null);
+    setPreview(file ? URL.createObjectURL(file) : facility?.image_url ?? null);
   }
 
   return (
@@ -111,13 +127,17 @@ export default function FacilityForm({ facility }: { facility?: Facility }) {
         <input
           type="file"
           name="image"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp,image/avif"
           onChange={handleFileChange}
           className="w-full text-sm text-navy-700/70 file:mr-3 file:rounded-md file:border-0 file:bg-navy-900/5 file:px-3 file:py-2 file:text-sm file:font-medium file:text-navy-950 hover:file:bg-navy-900/10"
         />
         <p className="mt-1 text-xs text-navy-700/50">
           {facility ? "Leave empty to keep the current photo." : "Upload a photo for this facility."}
+          {" "}JPG, PNG, WebP, or AVIF, up to 5 MB. For sharp photos, use the original file at least 1200 × 900 pixels; avoid screenshots or compressed copies.
         </p>
+        {photoWarning && (
+          <p role="status" className="mt-2 text-sm text-amber-700">{photoWarning}</p>
+        )}
       </div>
 
       <button
