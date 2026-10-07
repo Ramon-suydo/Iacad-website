@@ -1,12 +1,11 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
-import { changePassword, type PasswordFormState } from "./actions";
-
-const initialState: PasswordFormState = null;
+import { useEffect, useRef } from "react";
+import { changePassword } from "./actions";
+import { useStaffForm } from "@/lib/use-staff-form";
 
 export default function PasswordForm() {
-  const [state, formAction, pending] = useActionState(changePassword, initialState);
+  const { state, onSubmit, pending } = useStaffForm(changePassword);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -14,7 +13,7 @@ export default function PasswordForm() {
   }, [state]);
 
   return (
-    <form ref={formRef} action={formAction} className="max-w-lg space-y-5 rounded-2xl border border-navy-900/10 bg-white p-5 sm:p-7">
+    <form ref={formRef} onSubmit={onSubmit} className="max-w-lg space-y-5 rounded-2xl border border-navy-900/10 bg-white p-5 sm:p-7">
       <div>
         <label htmlFor="current_password" className="mb-1.5 block text-sm font-semibold text-navy-950">
           Current password

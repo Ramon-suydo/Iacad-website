@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
 import { saveAnnouncement } from "./actions";
+import { useStaffForm } from "@/lib/use-staff-form";
 
 type Announcement = {
   id: string;
@@ -13,12 +13,12 @@ type Announcement = {
 };
 
 export default function AnnouncementForm({ announcement }: { announcement?: Announcement }) {
-  const [state, formAction, pending] = useActionState(saveAnnouncement, null);
+  const { state, onSubmit, pending } = useStaffForm(saveAnnouncement);
 
   return (
-    <form action={formAction} className="max-w-xl space-y-5">
+    <form onSubmit={onSubmit} className="max-w-xl space-y-5">
       {state?.error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
         </div>
       )}

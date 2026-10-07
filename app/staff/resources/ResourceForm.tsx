@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
 import { saveResource } from "./actions";
+import { useStaffForm } from "@/lib/use-staff-form";
 
 type Resource = {
   id: string;
@@ -13,12 +13,12 @@ type Resource = {
 };
 
 export default function ResourceForm({ resource }: { resource?: Resource }) {
-  const [state, formAction, pending] = useActionState(saveResource, null);
+  const { state, onSubmit, pending } = useStaffForm(saveResource);
 
   return (
-    <form action={formAction} className="max-w-xl space-y-5">
+    <form onSubmit={onSubmit} className="max-w-xl space-y-5">
       {state?.error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
         </div>
       )}

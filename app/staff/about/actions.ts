@@ -2,12 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { FormState } from "@/lib/form-state";
+import { friendlyDbError } from "@/lib/db-error";
 import { createClient } from "@/lib/supabase/server";
 import { getStaffContext } from "@/lib/staff-role";
 import { queueOrApplyChange, saveNotice } from "@/lib/change-requests";
 import { defaultLibraryStaff } from "@/lib/about-team";
 
-export async function saveAboutContent(formData: FormData) {
+export async function saveAboutContent(_previous: FormState, formData: FormData): Promise<FormState> {
   const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
   const supabase = await createClient();
@@ -32,7 +34,7 @@ export async function saveAboutContent(formData: FormData) {
 
   const { error } = await queueOrApplyChange({ supabase, userId: user.id, role,
     table: "about_content", operation: "update", recordId: id, payload, title: "About page content" });
-  if (error) throw new Error(error.message);
+  if (error) return { error: friendlyDbError(error, "This content") };
 
   revalidatePath("/about");
   redirect(`/staff/about?notice=${saveNotice(role)}`);

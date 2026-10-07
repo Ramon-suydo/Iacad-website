@@ -1,6 +1,7 @@
 "use client";
 
 import { saveLibraryHours } from "./actions";
+import { useStaffForm } from "@/lib/use-staff-form";
 import type { LibraryHoursData, DayHours } from "@/lib/library-hours";
 
 function DayRow({ day }: { day: DayHours }) {
@@ -27,10 +28,14 @@ function DayRow({ day }: { day: DayHours }) {
 }
 
 export default function HoursForm({ hours }: { hours: LibraryHoursData }) {
+  const { state, onSubmit, pending } = useStaffForm(saveLibraryHours);
   const allIds = [...hours.main, ...hours.extension].map((d) => d.id).join(",");
 
   return (
-    <form action={saveLibraryHours} className="max-w-2xl space-y-8">
+    <form onSubmit={onSubmit} className="max-w-2xl space-y-8">
+      {state?.error && (
+        <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>
+      )}
       <input type="hidden" name="ids" value={allIds} />
 
       <div>
@@ -56,10 +61,10 @@ export default function HoursForm({ hours }: { hours: LibraryHoursData }) {
       </p>
 
       <button
-        type="submit"
+        type="submit" disabled={pending}
         className="rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400"
       >
-        Save Hours
+        {pending ? "Saving..." : "Save Hours"}
       </button>
     </form>
   );

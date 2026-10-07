@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { saveFacility } from "./actions";
+import { useStaffForm } from "@/lib/use-staff-form";
 
 type Facility = {
   id: string;
@@ -17,7 +18,7 @@ type Facility = {
 export default function FacilityForm({ facility }: { facility?: Facility }) {
   const [preview, setPreview] = useState<string | null>(facility?.image_url ?? null);
   const [photoWarning, setPhotoWarning] = useState<string | null>(null);
-  const [state, formAction, pending] = useActionState(saveFacility, null);
+  const { state, onSubmit, pending } = useStaffForm(saveFacility, [{ name: "image", bucket: "facility-images" }]);
 
   useEffect(() => {
     if (!preview?.startsWith("blob:")) return;
@@ -42,9 +43,9 @@ export default function FacilityForm({ facility }: { facility?: Facility }) {
   }
 
   return (
-    <form action={formAction} className="max-w-xl space-y-5">
+    <form onSubmit={onSubmit} className="max-w-xl space-y-5">
       {state?.error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
         </div>
       )}

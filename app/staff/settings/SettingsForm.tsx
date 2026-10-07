@@ -2,14 +2,19 @@
 
 import { useState } from "react";
 import { saveSiteSettings } from "./actions";
+import { useStaffForm } from "@/lib/use-staff-form";
 import type { SiteSettings } from "@/lib/site-settings";
 
 export default function SettingsForm({ settings }: { settings: SiteSettings }) {
+  const { state, onSubmit, pending } = useStaffForm(saveSiteSettings, [{ name: "hero_image", bucket: "site-images" }, { name: "logo", bucket: "site-images" }]);
   const [heroPreview, setHeroPreview] = useState<string | null>(settings.hero_image);
   const [logoPreview, setLogoPreview] = useState<string | null>(settings.logo_url);
 
   return (
-    <form action={saveSiteSettings} className="max-w-2xl space-y-8">
+    <form onSubmit={onSubmit} className="max-w-2xl space-y-8">
+      {state?.error && (
+        <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>
+      )}
       <input type="hidden" name="id" value={settings.id} />
       <input type="hidden" name="current_hero_image" value={settings.hero_image ?? ""} />
       <input type="hidden" name="current_logo_url" value={settings.logo_url ?? ""} />
@@ -46,10 +51,10 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
         <h2 className="text-lg font-extrabold text-navy-950">Logo</h2>
         <div className="mt-4">
           {logoPreview && <img src={logoPreview} alt="Logo preview" className="mb-3 h-16 w-auto rounded-md bg-navy-950 p-2" />}
-          <input type="file" name="logo" accept="image/*"
+          <input type="file" name="logo" accept="image/jpeg,image/png,image/webp,image/avif"
             onChange={(e) => { const f = e.target.files?.[0]; if (f) setLogoPreview(URL.createObjectURL(f)); }}
             className="w-full text-sm text-navy-700/70 file:mr-3 file:rounded-md file:border-0 file:bg-navy-900/5 file:px-3 file:py-2 file:text-sm file:font-medium file:text-navy-950 hover:file:bg-navy-900/10" />
-          <p className="mt-1 text-xs text-navy-700/50">Shown in the navbar and footer. Leave empty to keep the current logo.</p>
+          <p className="mt-1 text-xs text-navy-700/50">Shown in the navbar and footer. Leave empty to keep the current logo. JPG, PNG, WebP, or AVIF, up to 5 MB.</p>
         </div>
       </div>
 
@@ -90,10 +95,10 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
           </div>
           <div>
             {heroPreview && <img src={heroPreview} alt="Hero preview" className="mb-3 h-44 w-full rounded-md object-cover" />}
-            <input type="file" name="hero_image" accept="image/*"
+            <input type="file" name="hero_image" accept="image/jpeg,image/png,image/webp,image/avif"
               onChange={(e) => { const f = e.target.files?.[0]; if (f) setHeroPreview(URL.createObjectURL(f)); }}
               className="w-full text-sm text-navy-700/70 file:mr-3 file:rounded-md file:border-0 file:bg-navy-900/5 file:px-3 file:py-2 file:text-sm file:font-medium file:text-navy-950 hover:file:bg-navy-900/10" />
-            <p className="mt-1 text-xs text-navy-700/50">First slide of the homepage hero carousel.</p>
+            <p className="mt-1 text-xs text-navy-700/50">First slide of the homepage hero carousel. JPG, PNG, WebP, or AVIF, up to 5 MB.</p>
           </div>
           <div>
             <p className="mb-3 text-sm font-semibold text-navy-950">Additional carousel images</p>
@@ -246,8 +251,8 @@ export default function SettingsForm({ settings }: { settings: SiteSettings }) {
         Looking for operating hours? That&apos;s managed on its own &quot;Library Hours&quot; page in the staff nav.
       </p>
 
-      <button type="submit" className="rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400">
-        Save Settings
+      <button type="submit" disabled={pending} className="rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400">
+        {pending ? "Saving..." : "Save Settings"}
       </button>
     </form>
   );

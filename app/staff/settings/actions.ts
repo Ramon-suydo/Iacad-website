@@ -2,55 +2,28 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { FormState } from "@/lib/form-state";
+import { friendlyDbError } from "@/lib/db-error";
+import { resolveUploadedImage } from "@/lib/uploaded-image";
 import { createClient } from "@/lib/supabase/server";
 import { getStaffContext } from "@/lib/staff-role";
 import { queueOrApplyChange, saveNotice } from "@/lib/change-requests";
 
-const BUCKET = "site-images";
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-const IMAGE_EXTENSIONS: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/avif": "avif",
-};
-
-async function uploadIfProvided(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  file: File | null,
-  prefix: string,
-  fallback: string | null
-) {
-  if (!file || file.size === 0) return fallback;
-  if (file.size > MAX_IMAGE_BYTES) throw new Error("Images must be 5 MB or smaller.");
-  const ext = IMAGE_EXTENSIONS[file.type];
-  if (!ext) throw new Error("Only JPG, PNG, WebP, and AVIF images are allowed.");
-  const path = `${prefix}-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: "3600", upsert: false });
-  if (error) throw new Error(error.message);
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  return data.publicUrl;
-}
-
-export async function saveSiteSettings(formData: FormData) {
+export async function saveSiteSettings(_previous: FormState, formData: FormData): Promise<FormState> {
   const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
   const supabase = await createClient();
 
   const id = formData.get("id") as string;
 
-  const heroImage = await uploadIfProvided(
-    supabase,
-    formData.get("hero_image") as File | null,
-    "hero",
-    (formData.get("current_hero_image") as string) || null
-  );
-  const logoUrl = await uploadIfProvided(
-    supabase,
-    formData.get("logo") as File | null,
-    "logo",
-    (formData.get("current_logo_url") as string) || null
-  );
+  const hero = await resolveUploadedImage(supabase, user.id, formData,
+    { name: "hero_image", bucket: "site-images" },
+    (formData.get("current_hero_image") as string) || null);
+  if (hero.error) return { error: hero.error };
+  const logo = await resolveUploadedImage(supabase, user.id, formData,
+    { name: "logo", bucket: "site-images" },
+    (formData.get("current_logo_url") as string) || null);
+  if (logo.error) return { error: logo.error };
 
   const payload = {
     name: (formData.get("name") as string).trim(),
@@ -60,8 +33,8 @@ export async function saveSiteSettings(formData: FormData) {
     address: (formData.get("address") as string).trim(),
     email: (formData.get("email") as string).trim(),
     phone: (formData.get("phone") as string).trim(),
-    hero_image: heroImage,
-    logo_url: logoUrl,
+    hero_image: hero.url,
+    logo_url: logo.url,
     hero_eyebrow: (formData.get("hero_eyebrow") as string).trim(),
     hero_headline: (formData.get("hero_headline") as string).trim(),
     hero_image_2: (formData.get("hero_image_2") as string).trim(),
@@ -107,7 +80,7 @@ export async function saveSiteSettings(formData: FormData) {
 
   const { error } = await queueOrApplyChange({ supabase, userId: user.id, role,
     table: "site_settings", operation: "update", recordId: id, payload, title: "Site settings" });
-  if (error) throw new Error(error.message);
+  if (error) return { error: friendlyDbError(error, "Site settings") };
 
   revalidatePath("/", "layout");
   redirect(`/staff/settings?notice=${saveNotice(role)}`);

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { saveAboutContent } from "./actions";
+import { useStaffForm } from "@/lib/use-staff-form";
 import { getLibraryStaff, type LibraryStaffMember } from "@/lib/about-team";
 
 type AboutContent = {
@@ -14,10 +15,14 @@ type AboutContent = {
 };
 
 export default function AboutForm({ content }: { content: AboutContent }) {
+  const { state, onSubmit, pending } = useStaffForm(saveAboutContent);
   const staffMembers = getLibraryStaff(content.staff_members);
 
   return (
-    <form action={saveAboutContent} className="max-w-3xl space-y-8">
+    <form onSubmit={onSubmit} className="max-w-3xl space-y-8">
+      {state?.error && (
+        <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>
+      )}
       <input type="hidden" name="id" value={content.id} />
 
       <div>
@@ -98,10 +103,10 @@ export default function AboutForm({ content }: { content: AboutContent }) {
       </section>
 
       <button
-        type="submit"
+        type="submit" disabled={pending}
         className="rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400"
       >
-        Save
+        {pending ? "Saving..." : "Save"}
       </button>
     </form>
   );

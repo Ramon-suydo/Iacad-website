@@ -1,6 +1,7 @@
 "use client";
 
 import { saveGuideline } from "./actions";
+import { useStaffForm } from "@/lib/use-staff-form";
 
 type Guideline = {
   id: string;
@@ -12,8 +13,12 @@ type Guideline = {
 };
 
 export default function GuidelineForm({ guideline }: { guideline?: Guideline }) {
+  const { state, onSubmit, pending } = useStaffForm(saveGuideline);
   return (
-    <form action={saveGuideline} className="max-w-xl space-y-5">
+    <form onSubmit={onSubmit} className="max-w-xl space-y-5">
+      {state?.error && (
+        <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</div>
+      )}
       {guideline && <input type="hidden" name="id" value={guideline.id} />}
 
       <div>
@@ -71,8 +76,8 @@ export default function GuidelineForm({ guideline }: { guideline?: Guideline }) 
         </label>
       </div>
 
-      <button type="submit" className="rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400">
-        Save
+      <button type="submit" disabled={pending} className="rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 hover:bg-gold-400">
+        {pending ? "Saving..." : "Save"}
       </button>
     </form>
   );

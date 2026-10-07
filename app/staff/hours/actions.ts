@@ -2,11 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { FormState } from "@/lib/form-state";
+import { friendlyDbError } from "@/lib/db-error";
 import { createClient } from "@/lib/supabase/server";
 import { getStaffContext } from "@/lib/staff-role";
 import { queueOrApplyChange, saveNotice } from "@/lib/change-requests";
 
-export async function saveLibraryHours(formData: FormData) {
+export async function saveLibraryHours(_previous: FormState, formData: FormData): Promise<FormState> {
   const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
   const supabase = await createClient();
@@ -22,7 +24,7 @@ export async function saveLibraryHours(formData: FormData) {
 
   const { error } = await queueOrApplyChange({ supabase, userId: user.id, role,
     table: "library_hours", operation: "bulk_update", payload: { changes }, title: "Library hours" });
-  if (error) throw new Error(error.message);
+  if (error) return { error: friendlyDbError(error, "This content") };
 
   revalidatePath("/", "layout");
   redirect(`/staff/hours?notice=${saveNotice(role)}`);

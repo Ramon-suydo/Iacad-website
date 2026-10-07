@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getStaffContext } from "@/lib/staff-role";
 import { friendlyDbError } from "@/lib/db-error";
 import type { FormState } from "@/lib/form-state";
+import { resolveUploadedImage } from "@/lib/uploaded-image";
 import { queueOrApplyChange, saveNotice } from "@/lib/change-requests";
 
 function slugify(text: string) {
@@ -13,14 +14,6 @@ function slugify(text: string) {
 }
 
 const BUCKET = "facility-images";
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-const IMAGE_EXTENSIONS: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/avif": "avif",
-};
-
 export async function saveFacility(_prevState: FormState, formData: FormData): Promise<FormState> {
   const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
@@ -36,26 +29,16 @@ export async function saveFacility(_prevState: FormState, formData: FormData): P
   const published = formData.get("published") === "on";
   const currentImageUrl = (formData.get("current_image_url") as string) || null;
 
-  const file = formData.get("image") as File | null;
-  let imageUrl = currentImageUrl;
-
-  if (file && file.size > 0) {
-    if (file.size > MAX_IMAGE_BYTES) return { error: "Images must be 5 MB or smaller." };
-    const ext = IMAGE_EXTENSIONS[file.type];
-    if (!ext) return { error: "Only JPG, PNG, WebP, and AVIF images are allowed." };
-    const path = `${slugify(name)}-${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: "3600", upsert: false });
-    if (uploadError) return { error: uploadError.message };
-    const { data: publicUrlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
-    imageUrl = publicUrlData.publicUrl;
-  }
+  const image = await resolveUploadedImage(supabase, user.id, formData,
+    { name: "image", bucket: "facility-images" }, currentImageUrl);
+  if (image.error) return { error: image.error };
 
   const payload = {
     name,
     slug: `${campus.toLowerCase()}-${slugify(name)}`,
     campus,
     description,
-    image_url: imageUrl,
+    image_url: image.url,
     tags,
     sort_order: sortOrder,
     published,

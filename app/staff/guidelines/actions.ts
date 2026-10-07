@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { FormState } from "@/lib/form-state";
+import { friendlyDbError } from "@/lib/db-error";
 import { createClient } from "@/lib/supabase/server";
 import { getStaffContext } from "@/lib/staff-role";
 import { queueOrApplyChange, saveNotice } from "@/lib/change-requests";
@@ -10,7 +12,7 @@ function slugify(text: string) {
   return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-export async function saveGuideline(formData: FormData) {
+export async function saveGuideline(_previous: FormState, formData: FormData): Promise<FormState> {
   const { user, role } = await getStaffContext();
   if (!user) redirect("/staff/login");
   const supabase = await createClient();
@@ -36,7 +38,7 @@ export async function saveGuideline(formData: FormData) {
 
   const { error } = await queueOrApplyChange({ supabase, userId: user.id, role,
     table: "guidelines", operation: id ? "update" : "insert", recordId: id, payload, title });
-  if (error) throw new Error(error.message);
+  if (error) return { error: friendlyDbError(error, "This content") };
 
   revalidatePath("/staff/guidelines");
   revalidatePath("/guidelines");
