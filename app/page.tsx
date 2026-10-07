@@ -171,10 +171,7 @@ export default async function HomePage() {
                 )}
               </div>
               <div className="p-5">
-                <span className="text-xs font-semibold uppercase tracking-wide text-gold-400">
-                  {facility.campus} Library
-                </span>
-                <h3 className="mt-1 text-lg font-extrabold text-white">
+                <h3 className="text-lg font-extrabold text-white">
                   {facility.name}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-white/60">

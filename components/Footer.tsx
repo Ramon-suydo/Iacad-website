@@ -97,9 +97,6 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             © {year} {settings.name}. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
-            <p className="text-xs text-white/40">
-              Informational site — not affiliated with library system access.
-            </p>
             <Link href="/staff/login" className="text-xs text-white/20 transition-colors hover:text-white/50">
               Staff
             </Link>

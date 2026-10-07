@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import ServiceIllustration from "@/components/ServiceIllustration";
-import { getServiceCategory, serviceCategories, type PublishedService } from "@/lib/service-categories";
+import { serviceCategories } from "@/lib/service-categories";
+import type { ServiceDetail } from "@/lib/service-details";
 
-export default function ServicesExplorer({ services, unavailable = false }: { services: PublishedService[]; unavailable?: boolean }) {
+export default function ServicesExplorer({ services }: { services: ServiceDetail[] }) {
   const [active, setActive] = useState<number | null>(null);
   const [closing, setClosing] = useState(false);
   const id = useId();
@@ -13,7 +15,7 @@ export default function ServicesExplorer({ services, unavailable = false }: { se
   const dialog = useRef<HTMLDialogElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const category = active === null ? null : serviceCategories[active];
-  const items = category ? services.filter((service) => getServiceCategory(service) === category.id) : [];
+  const items = category ? services.filter((service) => service.category === category.id) : [];
 
   useLayoutEffect(() => {
     if (active === null) return;
@@ -49,36 +51,40 @@ export default function ServicesExplorer({ services, unavailable = false }: { se
 
   return (
     <div>
-      <div className="mb-7 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-7">
         <p className="text-sm text-navy-700/70">Choose a service to explore how we can help.</p>
-        <span className="rounded-full border border-navy-900/10 bg-paper px-3 py-1.5 text-xs font-medium text-navy-700">Made for every way you learn</span>
       </div>
 
-      <div role="group" aria-label="Library service categories" className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+      <div role="group" aria-label="Library service categories" className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {serviceCategories.map((category, index) => (
           <button
             key={category.id}
             ref={(element) => { tabs.current[index] = element; }}
             type="button"
+            aria-label={`Explore ${category.title}`}
             aria-haspopup="dialog"
             aria-controls={`${id}-details`}
             aria-expanded={active === index}
             onClick={() => { setClosing(false); setActive(index); }}
             onKeyDown={(event) => handleKeyDown(event, index)}
-            className={`service-category group relative flex min-w-0 flex-col items-center rounded-2xl border bg-white p-3 text-center shadow-card transition-all duration-300 sm:p-5 ${active === index ? "border-cobalt-500 shadow-[0_16px_40px_-24px_rgba(59,91,255,.65)]" : "border-navy-900/10 hover:-translate-y-1 hover:border-cobalt-bright/40"}`}
+            className={`service-category index-card group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border bg-white text-left shadow-card transition-[transform,border-color] duration-200 motion-safe:hover:-translate-y-1 ${active === index ? "border-cobalt-500" : "border-navy-900/10 hover:border-cobalt-bright/40"}`}
           >
-            <span aria-hidden="true" className={`absolute left-3 top-3 text-[10px] font-bold tracking-widest sm:left-5 sm:top-5 ${active === index ? "text-cobalt-500" : "text-navy-700/45"}`}>0{index + 1}</span>
-            <span className={`service-hexagon mt-3 flex aspect-[1.05] min-h-36 w-full max-w-56 items-center justify-center px-4 py-9 font-display text-xs font-extrabold uppercase leading-snug tracking-tight text-white transition-colors duration-300 sm:px-5 sm:text-sm ${active === index ? "bg-cobalt-500" : "bg-navy-800 group-hover:bg-navy-700"}`}>
-              {category.title}
+            <span aria-hidden="true" className="relative flex h-44 w-full items-end justify-center overflow-hidden border-b border-navy-900/5 bg-gradient-to-br from-paper via-paper to-cobalt-500/5 px-6 pb-2">
+              <span className="absolute left-5 top-5 text-[10px] font-bold uppercase tracking-[.16em] text-cobalt-500">Service 0{index + 1}</span>
+              <span className="absolute -right-5 -top-9 h-32 w-32 rounded-full border border-cobalt-500/10" />
+              <span className="absolute -right-10 -top-14 h-44 w-44 rounded-full border border-cobalt-500/5" />
+              <span className="relative block h-32 w-52"><ServiceIllustration category={category.id} /></span>
             </span>
-            <span className="mt-1 block h-24 w-full transition-transform duration-300 group-hover:-translate-y-1 sm:h-32">
-              <ServiceIllustration category={category.id} />
+            <span className="flex w-full flex-1 flex-col p-6 pb-5">
+              <span className="block font-display text-xl font-extrabold leading-snug tracking-[-.025em] text-navy-950 sm:min-h-[5.25rem] xl:text-lg xl:min-h-[4.75rem]">{category.title}</span>
+              <span className="mt-3 block text-sm leading-relaxed text-navy-700/65">{category.shortTitle}</span>
             </span>
-            <span aria-hidden="true" className={`mt-3 flex items-center gap-2 text-xs font-semibold sm:text-sm ${active === index ? "text-cobalt-500" : "text-navy-700/70"}`}>
-              {active === index ? "Now exploring" : "Explore service"}
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform ${active === index ? "rotate-90" : "group-hover:translate-x-1"}`}><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
+            <span aria-hidden="true" className="mx-6 flex items-center justify-between gap-4 border-t border-navy-900/8 py-4 text-sm font-semibold text-navy-950">
+              <span>{active === index ? "Viewing services" : "Explore services"}</span>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy-900/5 text-cobalt-500 transition-colors group-hover:bg-navy-950 group-hover:text-gold-400">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
+              </span>
             </span>
-            <span aria-hidden="true" className={`absolute -bottom-1 h-1 w-12 rounded-full transition-colors ${active === index ? "bg-gold-500" : "bg-transparent"}`} />
           </button>
         ))}
       </div>
@@ -134,13 +140,21 @@ export default function ServicesExplorer({ services, unavailable = false }: { se
               <div className="service-dialog-items grid gap-3 sm:grid-cols-2">
                 {items.length > 0 ? items.map((service) => (
                   <article key={service.id} className="service-dialog-item index-card rounded-xl border border-navy-900/8 bg-white p-5 shadow-card">
+                    {service.logo && (
+                      <Image src={service.logo.src} alt={service.logo.alt} width={service.logo.width} height={service.logo.height} unoptimized className="mb-4 h-auto w-32" />
+                    )}
                     <h3 className="text-base font-extrabold text-navy-950">{service.name}</h3>
                     <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-navy-700/70">{service.description}</p>
+                    {service.href && (
+                      <a href={service.href} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-md py-1 text-sm font-semibold text-cobalt-500 underline decoration-cobalt-500/30 underline-offset-4 hover:text-navy-950">
+                        {service.linkLabel}<span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    )}
                   </article>
                 )) : (
                   <div className="rounded-xl border border-navy-900/8 bg-white p-6 sm:col-span-2">
                     <p className="text-base font-semibold text-navy-950">Let’s find what you need.</p>
-                    <p className="mt-2 text-sm leading-relaxed text-navy-700/70">{unavailable ? "Service details are temporarily unavailable. Our librarians can help with your request." : "Explore the linked page for more information, or talk to our librarians about your needs."}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-navy-700/70">Explore the linked page for more information, or talk to our librarians about your needs.</p>
                     <Link href="/contact" className="mt-4 inline-block text-sm font-semibold text-cobalt-500 underline decoration-cobalt-500/30 underline-offset-4 hover:text-navy-950">Contact the library</Link>
                   </div>
                 )}

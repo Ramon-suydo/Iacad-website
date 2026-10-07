@@ -4,6 +4,7 @@ import PageHeader from "@/components/PageHeader";
 import Section from "@/components/Section";
 import ServicesExplorer from "@/components/ServicesExplorer";
 import { createClient } from "@/lib/supabase/server";
+import { getServiceDetails } from "@/lib/service-details";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -14,11 +15,14 @@ export const revalidate = 0;
 
 export default async function ServicesPage() {
   const supabase = await createClient();
-  const { data: services, error } = await supabase
+  const [{ data: services }, { data: facilities }] = await Promise.all([supabase
     .from("services")
     .select("id, name, description, icon")
     .eq("published", true)
-    .order("sort_order", { ascending: true });
+    .order("sort_order", { ascending: true }),
+    supabase.from("facilities").select("name, description")
+      .eq("published", true).order("campus").order("sort_order", { ascending: true }),
+  ]);
 
   return (
     <>
@@ -29,7 +33,7 @@ export default async function ServicesPage() {
       />
 
       <Section eyebrow="At your service" title="How can we help you today?">
-        <ServicesExplorer services={services ?? []} unavailable={Boolean(error)} />
+        <ServicesExplorer services={getServiceDetails(services ?? [], facilities ?? [])} />
       </Section>
 
       <Section className="bg-navy-950">

@@ -35,15 +35,3 @@ export const serviceCategories = [
 
 export type ServiceCategoryId = (typeof serviceCategories)[number]["id"];
 export type PublishedService = { id: string; name: string; description: string; icon: string };
-
-export function getServiceCategory(service: PublishedService): ServiceCategoryId {
-  const name = service.name.toLowerCase();
-  if (/electronic|online|digital|database|e-?book|e-?resource|information literacy|computer|internet|wi[ -]?fi|opac|virtual/.test(name)) return "digital";
-  if (/individual|quiet|silent|independent|extended.*hours|charging/.test(name)) return "individual";
-  if (/group|collaborat|discussion|team|room.*book|board games/.test(name)) return "collaborative";
-  if (/borrow|circulation|research|reference|print|scan|photocopy|current awareness/.test(name)) return "circulation";
-  if (service.icon === "users") return "collaborative";
-  if (service.icon === "clock") return "individual";
-  if (service.icon === "graduation") return "digital";
-  return "circulation";
-}
