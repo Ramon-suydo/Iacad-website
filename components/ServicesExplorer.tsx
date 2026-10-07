@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import ServiceIllustration from "@/components/ServiceIllustration";
 import { getServiceCategory, serviceCategories, type PublishedService } from "@/lib/service-categories";
 
@@ -15,16 +15,17 @@ export default function ServicesExplorer({ services, unavailable = false }: { se
   const category = active === null ? null : serviceCategories[active];
   const items = category ? services.filter((service) => getServiceCategory(service) === category.id) : [];
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (active === null) return;
     const element = dialog.current;
     if (!element) return;
-    if (!element.open) element.showModal();
-    closeButton.current?.focus({ preventScroll: true });
     const previousOverflow = document.body.style.overflow;
     const previousGutter = document.documentElement.style.scrollbarGutter;
     document.documentElement.style.scrollbarGutter = "stable";
     document.body.style.overflow = "hidden";
+    // Batch page layout changes before the dialog's first visible frame.
+    if (!element.open) element.showModal();
+    closeButton.current?.focus({ preventScroll: true });
     return () => {
       document.body.style.overflow = previousOverflow;
       document.documentElement.style.scrollbarGutter = previousGutter;
@@ -89,7 +90,7 @@ export default function ServicesExplorer({ services, unavailable = false }: { se
         aria-describedby={`${id}-description`}
         aria-modal="true"
         data-closing={closing}
-        className="service-dialog fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto overscroll-contain rounded-3xl border border-white/70 bg-paper p-0 text-navy-950 shadow-[0_40px_120px_-30px_rgba(7,11,31,.55)]"
+        className="service-dialog fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto overscroll-contain rounded-3xl border border-white/70 bg-paper p-0 text-navy-950 shadow-[0_24px_64px_-24px_rgba(7,11,31,.45)]"
         onCancel={(event) => { event.preventDefault(); closeDetails(); }}
         onKeyDown={(event) => {
           if (event.key !== "Tab") return;
@@ -131,8 +132,8 @@ export default function ServicesExplorer({ services, unavailable = false }: { se
                 <div className="hidden h-28 sm:block"><ServiceIllustration category={category.id} /></div>
               </div>
               <div className="service-dialog-items grid gap-3 sm:grid-cols-2">
-                {items.length > 0 ? items.map((service, index) => (
-                  <article key={service.id} style={{ "--service-delay": `${Math.min(index, 5) * 45}ms` } as CSSProperties} className="service-dialog-item index-card rounded-xl border border-navy-900/8 bg-white p-5 shadow-card">
+                {items.length > 0 ? items.map((service) => (
+                  <article key={service.id} className="service-dialog-item index-card rounded-xl border border-navy-900/8 bg-white p-5 shadow-card">
                     <h3 className="text-base font-extrabold text-navy-950">{service.name}</h3>
                     <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-navy-700/70">{service.description}</p>
                   </article>
