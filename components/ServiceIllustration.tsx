@@ -6,7 +6,7 @@ const gold = "#e8c874";
 const cyan = "#2dd4dc";
 const coral = "#ff5c5c";
 
-function Person({ x, y, shirt = blue, seated = false }: { x: number; y: number; shirt?: string; seated?: boolean }) {
+export function Person({ x, y, shirt = blue, seated = false }: { x: number; y: number; shirt?: string; seated?: boolean }) {
   return (
     <g transform={`translate(${x} ${y})`}>
       <path d="M-10 2q-3-22 10-22T12 2" fill={navy} />

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import ServiceIllustration from "@/components/ServiceIllustration";
+import ServiceDetailIllustration from "@/components/ServiceDetailIllustration";
 import { serviceCategories } from "@/lib/service-categories";
 import type { ServiceDetail } from "@/lib/service-details";
 
@@ -139,7 +140,13 @@ export default function ServicesExplorer({ services }: { services: ServiceDetail
               </div>
               <div className="service-dialog-items grid gap-3 sm:grid-cols-2">
                 {items.length > 0 ? items.map((service) => (
-                  <article key={service.id} className="service-dialog-item index-card rounded-xl border border-navy-900/8 bg-white p-5 shadow-card">
+                  <article key={service.id} className="service-dialog-item index-card overflow-hidden rounded-xl border border-navy-900/8 bg-white shadow-card">
+                    <div aria-hidden="true" className="relative flex h-36 items-center justify-center overflow-hidden border-b border-navy-900/5 bg-gradient-to-br from-paper via-paper to-cobalt-500/5">
+                      <span className="absolute -right-6 -top-12 h-36 w-36 rounded-full border border-cobalt-500/10" />
+                      <span className="absolute -right-12 -top-16 h-48 w-48 rounded-full border border-cobalt-500/5" />
+                      <div className="relative h-32 w-52"><ServiceDetailIllustration serviceId={service.id} category={service.category} /></div>
+                    </div>
+                    <div className="p-5">
                     {service.logo && (
                       <Image src={service.logo.src} alt={service.logo.alt} width={service.logo.width} height={service.logo.height} unoptimized className="mb-4 h-auto w-32" />
                     )}
@@ -150,6 +157,7 @@ export default function ServicesExplorer({ services }: { services: ServiceDetail
                         {service.linkLabel}<span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span>
                       </a>
                     )}
+                    </div>
                   </article>
                 )) : (
                   <div className="rounded-xl border border-navy-900/8 bg-white p-6 sm:col-span-2">
